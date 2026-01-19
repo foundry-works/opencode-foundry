@@ -66,7 +66,7 @@ Set in `foundry-mcp.toml`:
 auto = true       # Skip prompts
 delegate = true   # Use subagents
 parallel = true   # Run concurrently
-model = "haiku"   # Model for subagents (haiku, sonnet, opus)
+model = "small"   # Model size for subagents (small, medium, large)
 ```
 
 ### Via Interactive Selection
@@ -277,7 +277,7 @@ Main Agent (orchestrator)
 # For each task in batch
 Task(
     subagent_type="general",
-    model="{model}",  # haiku (default), sonnet, or opus
+    model="{model}",  # small (default), medium, or large
     prompt=f"""
     Implement task {task_id} from spec {spec_id}.
 

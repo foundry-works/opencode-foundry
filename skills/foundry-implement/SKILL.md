@@ -90,14 +90,14 @@ This skill interacts solely with the Foundry MCP server (`foundry-mcp`). Tools u
 
 Four flags control execution behavior. Defaults loaded via `environment action="get-config"`, CLI flags override.
 
-**Config Loading:** At entry, call the environment tool to read configuration from `foundry-mcp.toml`. Returns both `implement` (mode flags + model) and `git` (commit cadence) sections. If the config file is missing or section not found, use defaults (all false for implement, model=haiku).
+**Config Loading:** At entry, call the environment tool to read configuration from `foundry-mcp.toml`. Returns both `implement` (mode flags + model) and `git` (commit cadence) sections. If the config file is missing or section not found, use defaults (all false for implement, model=small).
 
 | Flag | Effect |
 |------|--------|
 | `--auto` | Skip prompts between tasks (autonomous execution) |
 | `--delegate` | Use subagent(s) for implementation |
 | `--parallel` | Run subagents concurrently (implies `--delegate`) |
-| `--model <haiku\|sonnet\|opus>` | Model for delegated tasks (default: haiku) |
+| `--model <small\|medium\|large>` | Model size for delegated tasks (default: small) |
 
 **Resulting combinations:**
 
@@ -146,7 +146,7 @@ Uses subagent(s) for implementation. Fresh context per task while main agent han
 
 **Key behaviors:**
 - Spawns `Task(subagent_type="general", model={model})` for each task implementation
-- Model defaults to `haiku`; override with `--model sonnet` or `--model opus`
+- Model defaults to `small`; override with `--model medium` or `--model large`
 - Sequential by default; concurrent with `--parallel`
 - Main agent handles task lifecycle (status updates, journaling)
 - With `--auto`: skips user gates; without: preserves all gates
@@ -274,7 +274,7 @@ Treat thoroughness as a prompt hint in the subagent prompt, not a config flag.
 
 **Benefits of subagent exploration:**
 - Prevents context bloat in main conversation
-- Haiku model is faster for search operations
+- Small model is faster for search operations
 - Returns focused results for detailed analysis
 - Keeps main context available for implementation
 

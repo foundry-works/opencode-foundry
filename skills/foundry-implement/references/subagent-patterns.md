@@ -4,10 +4,10 @@ OpenCode provides built-in subagents for efficient exploration without bloating 
 
 ## Available Subagents
 
-| Subagent | Model | Best For |
-|----------|-------|----------|
-| **Explore** | Haiku | File discovery, pattern search, codebase questions |
-| **General** | Sonnet | Complex multi-step research, code analysis |
+| Subagent | Model Size | Best For |
+|----------|------------|----------|
+| **Explore** | Small | File discovery, pattern search, codebase questions |
+| **General** | Medium | Complex multi-step research, code analysis |
 
 **Note:** Plan is a primary agent. Do not invoke it as a subagent.
 

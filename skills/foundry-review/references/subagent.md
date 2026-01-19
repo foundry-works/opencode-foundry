@@ -4,10 +4,10 @@ For complex fidelity reviews, leverage OpenCode's built-in subagents to gather c
 
 ## Built-in Subagents for Fidelity Review
 
-| Subagent | Model | Use Case |
-|----------|-------|----------|
-| **Explore** | Haiku | Fast file discovery, implementation mapping |
-| **General** | Sonnet | Complex deviation analysis requiring code reading |
+| Subagent | Model Size | Use Case |
+|----------|------------|----------|
+| **Explore** | Small | Fast file discovery, implementation mapping |
+| **General** | Medium | Complex deviation analysis requiring code reading |
 
 ## Invocation
 
@@ -76,6 +76,6 @@ Treat thoroughness as a prompt hint in the subagent prompt, not a config flag.
 | Benefit | Description |
 |---------|-------------|
 | **Context isolation** | File searches don't bloat main conversation |
-| **Faster discovery** | Haiku model finds files quickly |
+| **Faster discovery** | Small model finds files quickly |
 | **Focused investigation** | Post-review exploration targets specific deviations |
 | **Parallel preparation** | Can explore while formulating review strategy |

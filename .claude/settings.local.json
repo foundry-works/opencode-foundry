@@ -38,7 +38,8 @@
       "Bash(./scripts/sync-skills.sh:*)",
       "Bash(git add:*)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd OpenCode support with permissions and documentation\n\n- Add AGENTS.md with AI agent workflow guidance\n- Add OpenCode permissions script and config \\(scripts/setup-permissions-opencode\\)\n- Update opencode.json with permissions and extended MCP timeout\n- Add foundry-mcp.toml workspace configuration\n- Update README with improved MCP setup instructions\n- Update sync-skills.sh to sync AGENTS.md to .opencode/\n- Add docs/examples directory structure\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nRename model names to generic size descriptors\n\nUpdate skill documentation to use model-agnostic naming:\n- haiku → small\n- sonnet → medium  \n- opus → large\n\nThis makes the documentation portable across different LLM providers.\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ],
     "deny": [
       "Read(//**/specs/**/*.json)"

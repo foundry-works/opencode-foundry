@@ -4,10 +4,10 @@ For complex test failures, leverage OpenCode's built-in subagents to explore the
 
 ## Built-in Subagents for Test Debugging
 
-| Subagent | Model | Use Case |
-|----------|-------|----------|
-| **Explore** | Haiku | Fast codebase search, finding test files, fixtures |
-| **General** | Sonnet | Complex multi-step debugging investigations |
+| Subagent | Model Size | Use Case |
+|----------|------------|----------|
+| **Explore** | Small | Fast codebase search, finding test files, fixtures |
+| **General** | Medium | Complex multi-step debugging investigations |
 
 ## Invocation
 
@@ -71,6 +71,6 @@ Treat thoroughness as a prompt hint in the subagent prompt, not a config flag.
 | Benefit | Description |
 |---------|-------------|
 | **Context isolation** | Test output and search results don't bloat main conversation |
-| **Speed** | Haiku model searches faster than manual Glob/Grep |
+| **Speed** | Small model searches faster than manual Glob/Grep |
 | **Focus** | Returns curated findings instead of raw file lists |
 | **Parallelization** | Can run multiple Explore agents for different investigation paths |

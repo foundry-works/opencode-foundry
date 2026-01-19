@@ -47,7 +47,7 @@ Treat thoroughness as a prompt hint in the subagent prompt, not a config flag.
 ## Benefits of Parallel Investigation
 
 1. **Context isolation** - Each agent uses separate context
-2. **Speed** - Haiku model processes quickly
+2. **Speed** - Small model processes quickly
 3. **Thoroughness** - Multiple perspectives on codebase
 4. **Main context preserved** - Results summarized, not raw file contents
 
