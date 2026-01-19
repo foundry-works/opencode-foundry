@@ -280,8 +280,8 @@ Use the Explore agent (medium thoroughness) to find:
 
 Before implementing, use search/rg and targeted `Read` to verify dependencies and preview impact:
 
-1. **Verify dependencies exist**: Use `goToDefinition` on symbols the task modifies
-2. **Preview impact**: Use `findReferences` to identify all affected files and call sites
+1. **Verify dependencies exist**: Use `rg`/`Grep` and `Read` on symbols the task modifies
+2. **Preview impact**: Use `rg`/`Grep` to identify affected files and call sites
 3. **Include in plan**: Surface dependency findings (usage count, affected files, test coverage) in plan approval
 4. **Fallback**: If symbol usage is unclear, use Explore agent to find imports and usages
 

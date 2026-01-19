@@ -28,8 +28,7 @@ Need to understand code?
     |
     +-- Need impact analysis?
             |
-            +-- findReferences → count affected files
-            +-- Or: Grep + manual analysis
+            +-- Grep + manual analysis
 ```
 
 ## Combining Approaches
