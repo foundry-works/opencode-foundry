@@ -12,6 +12,7 @@ description: Review implementation fidelity against specifications by comparing 
 - [When to Use](#when-to-use-this-skill)
 - [MCP Tooling](#mcp-tooling)
 - [Core Workflow](#core-workflow)
+- [LSP Operations Quick Reference](#lsp-operations-quick-reference)
 - [Essential Commands](#essential-commands)
 - [Review Types](#review-types)
 - [Assessment Categories](#fidelity-assessment-categories)
@@ -20,7 +21,7 @@ description: Review implementation fidelity against specifications by comparing 
 
 ## Overview
 
-The `foundry-review` skill compares actual implementation against SDD specification requirements. It relies on MCP for AI-powered deviation analysis.
+The `foundry-review` skill compares actual implementation against SDD specification requirements. It uses LSP for structural verification and MCP for AI-powered deviation analysis.
 
 ## Skill Family
 
@@ -52,7 +53,11 @@ foundry-spec → foundry-implement → [CODE] → foundry-review (this skill) �
   - [no] → Explore subagent
   - [else] → skip
   - Spec changes → `spec action="diff"` → `spec action="history"`
+  - LSP pre-check → `documentSymbol`
+    - [structures exist?] → continue
+    - [else] → Early exit with findings → **Exit**: Report
   - MCP review → `fidelity action="review"` → Scope: phase or task
+    - [deviations found?] → LSP investigate → `goToDefinition` → `findReferences` → `incomingCalls`
   - Assess deviation: Exact, Minor, Major, Missing
   - **Exit** → Report with recommendations
 ```
@@ -94,7 +99,7 @@ foundry-mcp_spec action="history" spec_id="{spec-id}" limit=5
 
 ## Core Workflow
 
-The fidelity review workflow integrates MCP AI analysis:
+The fidelity review workflow integrates LSP verification with MCP AI analysis:
 
 ### Step 1: Gather Context (Optional)
 
@@ -102,6 +107,10 @@ For unfamiliar code, use Explore subagent to find implementation files:
 ```
 Explore agent (medium thoroughness): Find all files in phase-1, related tests, config files
 ```
+
+**Invocation:**
+- Use the Task tool with the subagent name (respects `permission.task`; denied subagents are not available).
+- Treat thoroughness as a prompt hint in the subagent prompt, not a config flag.
 
 ### Step 2: Check Spec Changes
 
@@ -129,7 +138,21 @@ Use this to:
 - Explain apparent deviations that reflect spec evolution
 ```
 
-### Step 3: MCP Fidelity Review
+### Step 3: LSP Structural Pre-Check
+
+Before the AI review, verify structural requirements with LSP:
+
+```python
+# Get symbols in implementation file
+symbols = LSP(operation="documentSymbol", filePath="src/auth/service.py", line=1, character=1)
+
+# Compare against spec: expects AuthService with login(), logout(), refresh_token()
+# Identify missing symbols before expensive AI review
+```
+
+**Why:** Catches missing implementations in seconds before 5-minute AI review.
+
+### Step 4: MCP Fidelity Review
 
 Run the AI-powered fidelity analysis:
 
@@ -142,6 +165,37 @@ foundry-mcp_review action="fidelity" spec_id="{spec-id}" task_id="{task-id}"
 ```
 
 The MCP tool handles spec loading, implementation analysis, AI consultation, and report generation.
+
+### Step 5: LSP-Assisted Investigation
+
+For deviations found, use LSP to investigate:
+
+```python
+# Trace deviation origin
+definition = LSP(operation="goToDefinition", filePath="src/auth/service.py", line=45, character=10)
+
+# Find what depends on deviated code
+calls = LSP(operation="incomingCalls", filePath="src/auth/service.py", line=45, character=10)
+
+# Assess blast radius
+refs = LSP(operation="findReferences", filePath="src/auth/service.py", line=45, character=10)
+```
+
+**Why:** Understand deviation impact before recommending fixes.
+
+**CRITICAL:** Read [references/lsp-integration.md](./references/lsp-integration.md) before LSP investigation. Contains required operation patterns.
+
+## LSP Operations Quick Reference
+
+| Operation | When to Use | Purpose |
+|-----------|-------------|---------|
+| `documentSymbol` | Pre-check | List all symbols in a file for structural verification |
+| `workspaceSymbol` | Pre-check | Find symbols across codebase |
+| `hover` | During review | Get type info and documentation |
+| `goToDefinition` | Investigation | Trace where symbols are defined |
+| `findReferences` | Investigation | Find all usages of a symbol |
+| `incomingCalls` | Investigation | Find what calls a function |
+| `outgoingCalls` | Investigation | Find what a function calls |
 
 ## Essential Commands
 
@@ -197,6 +251,7 @@ Skill(foundry:foundry-review) "Review phase phase-1 in spec user-auth-001"
 For comprehensive documentation including:
 - Long-running operations guidance → `references/long-running.md`
 - Review types → `references/review-types.md`
+- LSP integration patterns → `references/lsp-integration.md`
 - Querying spec data → `references/querying.md`
 - Workflow steps → `references/workflow.md`
 - Report structure → `references/report.md`

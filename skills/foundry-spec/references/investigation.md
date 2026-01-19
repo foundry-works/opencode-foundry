@@ -13,24 +13,26 @@ Use OpenCode's built-in subagents to efficiently explore codebases without bloat
 
 ## Parallel Exploration Pattern
 
-Launch multiple Explore agents in a single message for independent investigations:
+If you need parallel exploration, use Task tool delegation. Do not assume a single message can spawn multiple subagent sessions.
 
 ```
-Agent 1: Use the Explore agent (medium thoroughness) to find:
+Use the Explore subagent (medium thoroughness) to find:
 - All files in the authentication module
 - Existing auth patterns and middleware
 - Related test files
 
-Agent 2: Use the Explore agent (medium thoroughness) to find:
+Use the Explore subagent (medium thoroughness) to find:
 - Database models and schemas
 - Migration patterns
 - ORM usage examples
 
-Agent 3: Use the Explore agent (quick thoroughness) to find:
+Use the Explore subagent (quick thoroughness) to find:
 - Configuration files
 - Environment variable usage
 - Deployment scripts
 ```
+
+Treat thoroughness as a prompt hint in the subagent prompt, not a config flag.
 
 ## Investigation Focus Areas
 

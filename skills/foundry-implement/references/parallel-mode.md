@@ -253,6 +253,8 @@ foundry-mcp_task action="reset-batch" \
 
 Parallel mode uses OpenCode's Task tool to spawn subagents for each task.
 
+**Note:** Task tool delegation respects `permission.task`; denied subagents are not available.
+
 ### Delegation Pattern
 
 ```
@@ -262,7 +264,7 @@ Main Agent (orchestrator)
     |
     +-- For each eligible task:
     |       |
-    |       +-- Task(subagent_type="general-purpose", model={model})
+    |       +-- Task(subagent_type="general", model={model})
     |           - Receives: task context, file path, acceptance criteria
     |           - Returns: completion status, changes made, issues found
     |
@@ -274,7 +276,7 @@ Main Agent (orchestrator)
 ```python
 # For each task in batch
 Task(
-    subagent_type="general-purpose",
+    subagent_type="general",
     model="{model}",  # haiku (default), sonnet, or opus
     prompt=f"""
     Implement task {task_id} from spec {spec_id}.

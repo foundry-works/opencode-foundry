@@ -13,7 +13,7 @@ This repository uses **Spec-Driven Development (SDD)** - a methodology where det
 | `/foundry-pr` | Create PRs from completed specs | After spec completion, when creating comprehensive PRs |
 | `/foundry-research` | AI-powered research workflows | Complex questions, multi-perspective analysis, brainstorming |
 | `/foundry-note` | Capture ideas/bugs without disrupting flow | Quick capture during implementation, parking lot items |
-| `/foundry-refactor` | Safe refactoring with impact analysis | Renaming, extracting, moving symbols across files |
+| `/foundry-refactor` | Safe refactoring with LSP impact analysis | Renaming, extracting, moving symbols across files |
 | `/foundry-setup` | First-time foundry plugin setup | Initial repository configuration |
 
 ## Recommended Workflow
@@ -186,7 +186,10 @@ foundry-mcp_intake action="dismiss" item_id="{item-id}" reason="Resolved"
 
 ### /foundry-refactor
 ```bash
-# Always do impact analysis first
+# Prefer LSP for impact analysis
+LSP(operation="findReferences", filePath="src/module.py", line=10, character=6)
+
+# Fallback if LSP is unavailable
 rg -n "SymbolName" src/
 
 # Then proceed with refactoring using Edit tool

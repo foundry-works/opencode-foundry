@@ -32,7 +32,7 @@ description: Task implementation skill for spec-driven workflows. Reads specific
         - [approved] → PreImpl
         - [changes] → ↻ back to DraftPlan
         - [defer] → **Exit**
-      - PreImpl → Dependency analysis → Explore subagent
+      - PreImpl → LSP analysis → Explore subagent
       - `task action="update-status" status="in_progress"` → **Implement**
       - PostImpl → `task action="complete"` → Journal (auto)
       - [success?] → SurfaceNext → `task action="prepare"` → ShowNextTask → (GATE: continue?)
@@ -53,7 +53,7 @@ description: Task implementation skill for spec-driven workflows. Reads specific
 - **Entry** → `task action="prepare-batch"` → IdentifyEligible
   - [conflicts?] → ExcludeConflicting
   - `task action="start-batch"` → SpawnSubagents
-  - For each subagent → Task(general-purpose, run_in_background=true)
+  - For each subagent → Task(subagent_type="general", run_in_background=true)
   - TaskOutput(block=true) → CollectResults
   - `task action="complete-batch"` → AggregateResults
   - [failures?] → HandlePartialFailure
@@ -132,7 +132,7 @@ Spawns multiple subagents to execute independent tasks concurrently. File-path c
 **Key behaviors:**
 - Uses `task action="prepare-batch"` to identify eligible tasks
 - Excludes tasks with conflicting `file_path` metadata
-- Spawns `Task(general-purpose, run_in_background=true)` per task
+- Spawns `Task(subagent_type="general", run_in_background=true)` per task
 - Collects results via `TaskOutput` and aggregates with `complete-batch`
 - Handles partial failures (successful tasks complete, failed tasks remain in_progress)
 
@@ -145,7 +145,7 @@ Spawns multiple subagents to execute independent tasks concurrently. File-path c
 Uses subagent(s) for implementation. Fresh context per task while main agent handles orchestration.
 
 **Key behaviors:**
-- Spawns `Task(general-purpose, model={model})` for each task implementation
+- Spawns `Task(subagent_type="general", model={model})` for each task implementation
 - Model defaults to `haiku`; override with `--model sonnet` or `--model opus`
 - Sequential by default; concurrent with `--parallel`
 - Main agent handles task lifecycle (status updates, journaling)
@@ -153,7 +153,7 @@ Uses subagent(s) for implementation. Fresh context per task while main agent han
 
 **Subagent receives:**
 - Task details, file path, acceptance criteria
-- Context from main agent (search findings, explore results, previous sibling)
+- Context from main agent (LSP findings, explore results, previous sibling)
 - Verification scope guidance
 - Constraint: subagent does NOT update spec status or write journals
 
@@ -258,15 +258,19 @@ Before implementing, use OpenCode's built-in subagents for efficient codebase ex
 |----------|----------|--------------|
 | Find related files/patterns | Explore | medium |
 | Understand unfamiliar code areas | Explore | very thorough |
-| Complex multi-file investigation | general-purpose | N/A |
+| Complex multi-file investigation | General | N/A |
 
-**Example invocation:**
+**Invocation:** Use the Task tool with the subagent name (respects `permission.task`; denied subagents are not available).
+
+**Example prompt:**
 ```
-Use the Explore agent (medium thoroughness) to find:
+Use the Explore subagent (medium thoroughness) to find:
 - Existing implementations of similar patterns
 - Test files for the target module
 - Related documentation that may need updates
 ```
+
+Treat thoroughness as a prompt hint in the subagent prompt, not a config flag.
 
 **Benefits of subagent exploration:**
 - Prevents context bloat in main conversation
@@ -276,14 +280,14 @@ Use the Explore agent (medium thoroughness) to find:
 
 > For more subagent patterns including autonomous mode usage, see `references/subagent-patterns.md`
 
-### Dependency Analysis
+### LSP Dependency Analysis
 
-Before implementing, use search/rg and targeted `Read` to verify dependencies and preview impact:
+Before implementing, use LSP tools to verify dependencies and preview impact:
 
-1. **Verify dependencies exist**: Use `rg`/`Grep` and `Read` on symbols the task modifies
-2. **Preview impact**: Use `rg`/`Grep` to identify affected files and call sites
-3. **Include in plan**: Surface dependency findings (usage count, affected files, test coverage) in plan approval
-4. **Fallback**: If symbol usage is unclear, use Explore agent to find imports and usages
+1. **Verify dependencies exist**: Use `LSP(operation="goToDefinition", ...)` on symbols the task modifies
+2. **Preview impact**: Use `LSP(operation="findReferences", ...)` to identify affected files and call sites
+3. **Include in plan**: Surface LSP findings (usage count, affected files, test coverage) in plan approval
+4. **Fallback**: If LSP unavailable for file type, use Explore agent to find imports and usages
 
 ### Verification Scoping
 

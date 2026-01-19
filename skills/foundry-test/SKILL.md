@@ -91,6 +91,10 @@ Use **Explore subagents** (preferred) for code context, or `Glob`, `Grep`, and `
 - **Explore (medium)** - Understand module dependencies
 - **Explore (very thorough)** - Multi-file state/fixture investigation
 
+**Invocation:**
+- Use the Task tool with the subagent name (respects `permission.task`; denied subagents are not available).
+- Treat thoroughness as a prompt hint in the subagent prompt, not a config flag.
+
 > For detailed subagent patterns, see `references/subagent-patterns.md`
 
 ## Phase 4: AI Consultation
@@ -162,6 +166,7 @@ foundry-mcp_task action="add-requirement" spec_id={spec-id} task_id={task-id} re
 
 - Failure categories → `references/failure-categories.md`
 - Investigation patterns → `references/investigation.md`
+- Pre-flight diagnostics → `references/pre-flight.md`
 - Subagent patterns → `references/subagent-patterns.md`
 - AI prompt templates → `references/tool-selection.md`
 - Common fixes → `references/common-fixes.md`

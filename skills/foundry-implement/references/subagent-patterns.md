@@ -7,8 +7,13 @@ OpenCode provides built-in subagents for efficient exploration without bloating 
 | Subagent | Model | Best For |
 |----------|-------|----------|
 | **Explore** | Haiku | File discovery, pattern search, codebase questions |
-| **general-purpose** | Sonnet | Complex multi-step research, code analysis |
-| **Plan** | Sonnet | Architecture design, implementation planning |
+| **General** | Sonnet | Complex multi-step research, code analysis |
+
+**Note:** Plan is a primary agent. Do not invoke it as a subagent.
+
+## Invocation
+
+Use the Task tool with the subagent name (respects `permission.task`; denied subagents are not available).
 
 ## Explore Agent Thoroughness Levels
 
@@ -18,12 +23,14 @@ OpenCode provides built-in subagents for efficient exploration without bloating 
 | `medium` | Moderate exploration | Find related implementations |
 | `very thorough` | Comprehensive analysis | Understand entire subsystem |
 
+Treat thoroughness as a prompt hint in the subagent prompt, not a config flag.
+
 ## Pre-Implementation Exploration
 
 Before implementing a task, gather context efficiently:
 
 ```
-Use the Explore agent (medium thoroughness) to find:
+Use the Explore subagent (medium thoroughness) to find:
 - Existing implementations of similar patterns
 - Test files for the target module
 - Related documentation that may need updates
@@ -33,7 +40,7 @@ Use the Explore agent (medium thoroughness) to find:
 ## Pattern: Find Related Code
 
 ```
-Use the Explore agent (quick thoroughness) to find:
+Use the Explore subagent (quick thoroughness) to find:
 - All files importing {module-name}
 - Test coverage for {function-name}
 - Configuration files affecting {feature}
@@ -42,7 +49,7 @@ Use the Explore agent (quick thoroughness) to find:
 ## Pattern: Understand Architecture
 
 ```
-Use the Explore agent (very thorough) to understand:
+Use the Explore subagent (very thorough) to understand:
 - How {subsystem} is structured
 - Data flow through {component}
 - Integration points with {external-system}

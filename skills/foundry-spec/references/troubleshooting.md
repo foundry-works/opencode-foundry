@@ -52,6 +52,14 @@ Common issues and their resolutions.
 2. Markdown is well-formed
 3. Required sections present (Objective, Phases)
 
+## LSP Not Available
+
+**Symptoms:** LSP tools return errors
+
+**Fallbacks:**
+1. Use Explore agent with specific search terms
+2. Use Grep for symbol search: `Grep pattern="class AuthService"`
+
 ## Phase-Add-Bulk Errors
 
 **Error:** "At least one task definition is required"
@@ -128,7 +136,13 @@ foundry-mcp_authoring action="phase-add-bulk" spec_id="{spec-id}" phase='{"title
 ## Analysis Commands
 
 ```bash
-# Grep
+# LSP tools (preferred)
+LSP(operation="documentSymbol", filePath="src/auth/service.py", line=1, character=1)
+LSP(operation="findReferences", filePath="src/auth/service.py", line=15, character=6)
+LSP(operation="goToDefinition", filePath="src/api/routes.py", line=42, character=10)
+LSP(operation="incomingCalls", filePath="src/auth/service.py", line=42, character=10)
+
+# Fallback: Grep
 Grep pattern="class ClassName" type="py"
 Grep pattern="def functionName" type="py"
 ```

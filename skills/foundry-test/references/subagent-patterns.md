@@ -7,7 +7,11 @@ For complex test failures, leverage OpenCode's built-in subagents to explore the
 | Subagent | Model | Use Case |
 |----------|-------|----------|
 | **Explore** | Haiku | Fast codebase search, finding test files, fixtures |
-| **general-purpose** | Sonnet | Complex multi-step debugging investigations |
+| **General** | Sonnet | Complex multi-step debugging investigations |
+
+## Invocation
+
+Use the Task tool with the subagent name (respects `permission.task`; denied subagents are not available).
 
 ## By Failure Type
 
@@ -17,13 +21,13 @@ For complex test failures, leverage OpenCode's built-in subagents to explore the
 | **Import errors** | Explore (medium) - Map module dependencies and `__init__.py` files |
 | **Multi-file failures** | Explore (very thorough) - Trace imports, find all related tests |
 | **Fixture issues** | Explore (medium) - Find all conftest.py files and fixture definitions |
-| **Unknown code** | general-purpose - Full investigation with code reading |
+| **Unknown code** | General - Full investigation with code reading |
 
 ## Example Invocations
 
 **Finding fixture dependencies:**
 ```
-Use the Explore agent (medium thoroughness) to find:
+Use the Explore subagent (medium thoroughness) to find:
 - All conftest.py files in the test directory
 - Fixtures with session or module scope
 - Files that import or use the failing fixture
@@ -31,7 +35,7 @@ Use the Explore agent (medium thoroughness) to find:
 
 **Investigating flaky test state:**
 ```
-Use the Explore agent (very thorough) to find:
+Use the Explore subagent (very thorough) to find:
 - Global variables and module-level state in src/
 - Singleton patterns or caches
 - Database fixtures and their cleanup patterns
@@ -40,11 +44,13 @@ Use the Explore agent (very thorough) to find:
 
 **Tracing import chains:**
 ```
-Use the Explore agent (medium thoroughness) to find:
+Use the Explore subagent (medium thoroughness) to find:
 - All __init__.py files in the package
 - Circular import patterns between modules
 - Missing or misnamed imports
 ```
+
+Treat thoroughness as a prompt hint in the subagent prompt, not a config flag.
 
 ## When to Use Subagents vs Direct Tools
 

@@ -158,6 +158,14 @@ Display: "Permissions and experimental settings updated!"
 
 ---
 
+### LSP Tool Enablement (Optional)
+
+OpenCode's LSP tool is experimental. If you want LSP-enhanced workflows (refactor and review):
+- Ensure `permission.lsp: "allow"` is present in `opencode.json`
+- Set `OPENCODE_EXPERIMENTAL_LSP_TOOL=true` (or `OPENCODE_EXPERIMENTAL=true`) in your environment
+
+If LSP is not enabled, skills will fall back to Grep/Explore-based workflows.
+
 ## Phase 2: Workspace Setup
 
 1. Call `foundry-mcp_environment action="detect-topology"` to analyze the project structure
@@ -632,7 +640,7 @@ Use marker comments for idempotent updates:
 | Verify implementation | `foundry-review` skill |
 | Run tests and debug | `foundry-test` skill |
 | Create PR with spec context | `foundry-pr` skill |
-| Safe refactoring | `foundry-refactor` skill |
+| Safe refactoring with LSP | `foundry-refactor` skill |
 
 ### Key Rules
 
@@ -645,7 +653,8 @@ Use marker comments for idempotent updates:
 **Use Explore subagent before skills:**
 - Before `foundry-spec`: Understand codebase architecture and existing patterns
 - Before `foundry-implement`: Find related code, test files, dependencies
-- Thoroughness levels: `quick` (single file), `medium` (related files), `very thorough` (subsystem)
+- Use Task tool delegation (respects `permission.task`)
+- Thoroughness levels are prompt hints: `quick` (single file), `medium` (related files), `very thorough` (subsystem)
 
 **Task completion gates - NEVER mark complete if:**
 - Tests are failing (unless phase has separate verify task)
@@ -653,6 +662,11 @@ Use marker comments for idempotent updates:
 - Unresolved errors encountered
 - Required files or dependencies missing
 - Instead: keep `in_progress` and document blocker
+
+**LSP pre-checks for speed:**
+- Use `documentSymbol` before expensive AI reviews (foundry-review)
+- Use `findReferences` to assess impact before refactoring (foundry-refactor)
+- LSP catches structural issues in seconds vs minutes for full analysis
 
 **Research tool defaults - let config decide:**
 - Do NOT specify `timeout_per_provider` or `timeout_per_operation` - use `foundry-mcp.toml` defaults

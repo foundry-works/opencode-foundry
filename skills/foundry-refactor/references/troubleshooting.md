@@ -1,5 +1,16 @@
 # Troubleshooting
 
+## LSP Returns No Results
+
+**Symptoms:** LSP operations return empty or error
+
+**Checks:**
+1. Verify file type has LSP support (Python, TypeScript, Go, etc.)
+2. Ensure language server is running
+3. Check that symbol exists at specified line/character position
+
+**Resolution:** Fall back to Grep-based workflow
+
 ## Rename Breaks Imports
 
 **Symptoms:** After rename, imports fail to resolve
@@ -26,7 +37,7 @@
 
 ## Dead Code Detection False Positives
 
-**Symptoms:** Search finds no references, but code is used
+**Symptoms:** LSP says zero references, but code is used
 
 **Causes:**
 - Dynamic references (`getattr`, reflection)

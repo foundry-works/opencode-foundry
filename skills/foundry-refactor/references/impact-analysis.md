@@ -2,6 +2,19 @@
 
 **NEVER refactor without understanding impact first.**
 
+## LSP-Enhanced Impact Analysis
+
+```
+# Get all references to the symbol
+references = LSP(operation="findReferences", filePath="src/module.py", line=10, character=6)
+
+# Analyze results:
+- Total reference count
+- Unique files affected
+- Reference types (import, call, type annotation, assignment)
+- Test files vs production files
+```
+
 ## Impact Report Format
 
 Present to user before proceeding:
@@ -30,12 +43,13 @@ Present to user before proceeding:
 Proceed? [Execute] [Dry Run] [Cancel]
 ```
 
-## Impact Analysis Method
+## Fallback Impact Analysis
 
-Use Grep/rg to find references:
+If LSP unavailable:
 
 ```
-rg -n "OldClassName" src/
+Use Grep to find references:
+Grep pattern="OldClassName" path="src/" output_mode="content"
 ```
 
 WARNING: Grep-based analysis may include false positives (comments, strings).
