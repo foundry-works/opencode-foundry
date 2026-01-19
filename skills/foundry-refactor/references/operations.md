@@ -1,8 +1,10 @@
 # Refactoring Operations
 
+> Note: OpenCode CLI does not provide built-in LSP tools by default. Use LSP guidance only if you have LSP servers configured.
+
 ## Rename Operation
 
-**With LSP:**
+**With LSP (optional):**
 1. Collect all reference locations from `findReferences`
 2. Sort files by dependency order (imports first, then usages)
 3. For each file:

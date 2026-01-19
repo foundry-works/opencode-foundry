@@ -32,7 +32,7 @@ description: Task implementation skill for spec-driven workflows. Reads specific
         - [approved] → PreImpl
         - [changes] → ↻ back to DraftPlan
         - [defer] → **Exit**
-      - PreImpl → LSP analysis → Explore subagent
+      - PreImpl → Dependency analysis → Explore subagent
       - `task action="update-status" status="in_progress"` → **Implement**
       - PostImpl → `task action="complete"` → Journal (auto)
       - [success?] → SurfaceNext → `task action="prepare"` → ShowNextTask → (GATE: continue?)
@@ -153,7 +153,7 @@ Uses subagent(s) for implementation. Fresh context per task while main agent han
 
 **Subagent receives:**
 - Task details, file path, acceptance criteria
-- Context from main agent (LSP findings, explore results, previous sibling)
+- Context from main agent (search findings, explore results, previous sibling)
 - Verification scope guidance
 - Constraint: subagent does NOT update spec status or write journals
 
@@ -276,14 +276,14 @@ Use the Explore agent (medium thoroughness) to find:
 
 > For more subagent patterns including autonomous mode usage, see `references/subagent-patterns.md`
 
-### LSP Dependency Analysis
+### Dependency Analysis
 
-Before implementing, use LSP tools to verify dependencies and preview impact:
+Before implementing, use search/rg and targeted `Read` to verify dependencies and preview impact:
 
 1. **Verify dependencies exist**: Use `goToDefinition` on symbols the task modifies
 2. **Preview impact**: Use `findReferences` to identify all affected files and call sites
-3. **Include in plan**: Surface LSP findings (usage count, affected files, test coverage) in plan approval
-4. **Fallback**: If LSP unavailable for file type, use Explore agent to find imports and usages
+3. **Include in plan**: Surface dependency findings (usage count, affected files, test coverage) in plan approval
+4. **Fallback**: If symbol usage is unclear, use Explore agent to find imports and usages
 
 ### Verification Scoping
 

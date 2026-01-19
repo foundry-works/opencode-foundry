@@ -12,7 +12,7 @@ description: Review implementation fidelity against specifications by comparing 
 - [When to Use](#when-to-use-this-skill)
 - [MCP Tooling](#mcp-tooling)
 - [Core Workflow](#core-workflow)
-- [LSP Operations Quick Reference](#lsp-operations-quick-reference)
+- [Optional LSP Operations Quick Reference](#lsp-operations-quick-reference)
 - [Essential Commands](#essential-commands)
 - [Review Types](#review-types)
 - [Assessment Categories](#fidelity-assessment-categories)
@@ -21,7 +21,7 @@ description: Review implementation fidelity against specifications by comparing 
 
 ## Overview
 
-The `foundry-review` skill compares actual implementation against SDD specification requirements. It uses LSP for structural verification and MCP for AI-powered deviation analysis.
+The `foundry-review` skill compares actual implementation against SDD specification requirements. It relies on MCP for AI-powered deviation analysis and can use optional LSP checks when configured.
 
 ## Skill Family
 
@@ -53,11 +53,11 @@ foundry-spec → foundry-implement → [CODE] → foundry-review (this skill) �
   - [no] → Explore subagent
   - [else] → skip
   - Spec changes → `spec action="diff"` → `spec action="history"`
-  - LSP pre-check → `documentSymbol`
+  - Optional LSP pre-check → `documentSymbol`
     - [structures exist?] → continue
     - [else] → Early exit with findings → **Exit**: Report
   - MCP review → `fidelity action="review"` → Scope: phase or task
-    - [deviations found?] → LSP investigate → `goToDefinition` → `findReferences` → `incomingCalls`
+    - [deviations found?] → Optional LSP investigate → `goToDefinition` → `findReferences` → `incomingCalls`
   - Assess deviation: Exact, Minor, Major, Missing
   - **Exit** → Report with recommendations
 ```
@@ -99,7 +99,7 @@ foundry-mcp_spec action="history" spec_id="{spec-id}" limit=5
 
 ## Core Workflow
 
-The fidelity review workflow integrates LSP verification with MCP AI analysis:
+The fidelity review workflow integrates optional LSP checks with MCP AI analysis:
 
 ### Step 1: Gather Context (Optional)
 
@@ -134,9 +134,9 @@ Use this to:
 - Explain apparent deviations that reflect spec evolution
 ```
 
-### Step 3: LSP Structural Pre-Check
+### Step 3: Optional LSP Structural Pre-Check
 
-Before the AI review, verify structural requirements with LSP:
+Only run this step if LSP servers are configured. Otherwise skip to MCP review.
 
 ```python
 # Get symbols in implementation file
@@ -162,9 +162,9 @@ foundry-mcp_review action="fidelity" spec_id="{spec-id}" task_id="{task-id}"
 
 The MCP tool handles spec loading, implementation analysis, AI consultation, and report generation.
 
-### Step 5: LSP-Assisted Investigation
+### Step 5: Optional LSP-Assisted Investigation
 
-For deviations found, use LSP to investigate:
+For deviations found, use LSP to investigate only if LSP servers are configured. Otherwise use search/grep and MCP context.
 
 ```python
 # Trace deviation origin
@@ -179,9 +179,9 @@ refs = LSP(operation="findReferences", filePath="src/auth/service.py", line=45, 
 
 **Why:** Understand deviation impact before recommending fixes.
 
-**CRITICAL:** Read [references/lsp-integration.md](./references/lsp-integration.md) before LSP investigation. Contains required operation patterns.
+**CRITICAL:** Only use [references/lsp-integration.md](./references/lsp-integration.md) when LSP is configured. Otherwise skip.
 
-## LSP Operations Quick Reference
+## LSP Operations Quick Reference (Optional)
 
 | Operation | When to Use | Purpose |
 |-----------|-------------|---------|
@@ -247,7 +247,7 @@ Skill(foundry:foundry-review) "Review phase phase-1 in spec user-auth-001"
 For comprehensive documentation including:
 - Long-running operations guidance → `references/long-running.md`
 - Review types → `references/review-types.md`
-- LSP integration patterns → `references/lsp-integration.md`
+- Optional LSP integration patterns → `references/lsp-integration.md`
 - Querying spec data → `references/querying.md`
 - Workflow steps → `references/workflow.md`
 - Report structure → `references/report.md`

@@ -1,4 +1,6 @@
-# LSP Integration Patterns
+# LSP Integration Patterns (Optional)
+
+> Note: OpenCode CLI does not provide built-in LSP tools by default. Use this reference only if you have LSP servers configured; otherwise skip it.
 
 LSP (Language Server Protocol) provides structural code intelligence that complements the AI-powered MCP fidelity review. Use LSP for fast, deterministic checks; use MCP for semantic analysis.
 

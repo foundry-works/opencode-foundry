@@ -1,10 +1,12 @@
 # Codebase Analysis Patterns
 
+> Note: OpenCode CLI does not provide built-in LSP tools by default. Use this reference only if you have LSP servers configured; otherwise skip it.
+
 Strategies for understanding existing code before planning.
 
-## LSP Analysis (Preferred)
+## LSP Analysis (Optional)
 
-Use OpenCode's built-in LSP tools for precise semantic analysis:
+If you have LSP servers configured, you can use LSP tools for semantic analysis:
 
 ```python
 # Find all references to a symbol
@@ -24,9 +26,9 @@ incoming = incomingCalls(file="src/auth/service.py", symbol="authenticate", line
 outgoing = outgoingCalls(file="src/auth/service.py", symbol="authenticate", line=42, character=10)
 ```
 
-## Fallback: Explore Agents and Grep
+## Primary: Explore Agents and Grep
 
-When LSP is unavailable, use:
+Use these by default, and treat LSP as optional:
 
 ```bash
 # Find class/function definitions
@@ -44,7 +46,7 @@ Need to understand code?
     |
     +-- Know exact file/symbol?
     |       |
-    |       +-- Yes → LSP tools (findReferences, documentSymbol)
+    |       +-- Yes → LSP tools (if configured)
     |       |
     |       +-- No → Explore agent or Grep
     |
@@ -64,7 +66,7 @@ Need to understand code?
 
 ```
 1. Explore agent (quick) → Find relevant files
-2. documentSymbol → Understand file structure
-3. findReferences → Map dependencies and assess impact
+2. Grep/Read → Understand file structure
+3. findReferences (if configured) → Map dependencies and assess impact
 4. Read critical files → Deep understanding
 ```

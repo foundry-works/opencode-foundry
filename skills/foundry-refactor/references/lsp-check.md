@@ -1,4 +1,6 @@
-# LSP Availability Check
+# LSP Availability Check (Optional)
+
+> Note: OpenCode CLI does not provide built-in LSP tools by default. Use this reference only if you have LSP servers configured; otherwise skip it.
 
 Before using LSP-enhanced workflow, verify availability:
 

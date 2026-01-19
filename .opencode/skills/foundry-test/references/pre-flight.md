@@ -1,6 +1,8 @@
 # Pre-Flight Diagnostics
 
-Detailed LSP-based pre-flight diagnostics for catching import issues before running tests.
+> Note: OpenCode CLI does not provide built-in LSP tools by default. Use this reference only if you have LSP servers configured; otherwise skip it.
+
+Optional LSP-based pre-flight diagnostics for catching import issues before running tests.
 
 ## Symbol Resolution Check
 

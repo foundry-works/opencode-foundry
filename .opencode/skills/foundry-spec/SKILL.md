@@ -10,7 +10,7 @@ description: Spec-first development methodology that creates detailed specificat
 `Skill(foundry:foundry-spec)` creates detailed JSON specifications before any code is written. It analyzes the codebase, designs a phased implementation approach, produces structured task hierarchies, and runs automatic quality checks including AI review.
 
 **Core capabilities:**
-- Analyze codebase structure using Explore agents and LSP
+- Analyze codebase structure using Explore agents and search tools
 - Design phased implementation approaches
 - Create JSON specifications with task hierarchies
 - Define verification steps for each phase
@@ -30,8 +30,7 @@ See the flow below for the NBS version of the workflow.
 
 ```
 - **Entry** → Understand intent → Analyze
-  - [LSP available?] → LSP analysis
-  - [else] → Explore analysis
+  - Explore analysis → search/rg/Read as needed
   - **Plan** → `plan action="create"` → Fill plan content
   - **Plan Review** → `plan action="review"`
     - [findings?] → Revise plan → ↻ back to Plan Review
@@ -89,10 +88,7 @@ Before creating any plan:
 
 Use **Explore subagents** for large codebases (prevents context bloat), or `Glob`/`Grep`/`Read` for targeted lookups.
 
-**LSP-Enhanced Analysis** for refactoring:
-- `documentSymbol` - Understand file structure
-- `findReferences` - Assess impact (count affected files)
-- `goToDefinition` - Navigate to implementations
+For refactoring, use search/rg and `Read` to map symbols and dependencies.
 
 > See `references/codebase-analysis.md` for detailed patterns.
 

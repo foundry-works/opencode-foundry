@@ -1,8 +1,10 @@
 # Impact Analysis
 
+> Note: OpenCode CLI does not provide built-in LSP tools by default. Use LSP guidance only if you have LSP servers configured.
+
 **NEVER refactor without understanding impact first.**
 
-## LSP-Enhanced Impact Analysis
+## LSP-Enhanced Impact Analysis (Optional)
 
 ```
 # Get all references to the symbol

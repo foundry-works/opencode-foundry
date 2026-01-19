@@ -1,5 +1,7 @@
 # Troubleshooting
 
+> Note: OpenCode CLI does not provide built-in LSP tools by default. Use LSP guidance only if you have LSP servers configured.
+
 ## LSP Returns No Results
 
 **Symptoms:** `findReferences` or `documentSymbol` returns empty

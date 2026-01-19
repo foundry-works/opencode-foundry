@@ -1,13 +1,13 @@
 ---
 name: foundry-refactor
-description: Safe refactoring operations using LSP for precise symbol resolution. Supports rename, extract function/method, and move symbol operations with automatic reference updates.
+description: Safe refactoring operations with explicit impact analysis. Supports rename, extract function/method, and move symbol operations with reference updates using search-based workflows.
 ---
 
 # SDD-Refactor: Safe Refactoring Skill
 
 ## Overview
 
-`Skill(foundry:foundry-refactor)` provides LSP-powered refactoring with safety checks. It uses `findReferences` to understand impact before making changes, performs batch edits, and verifies correctness.
+`Skill(foundry:foundry-refactor)` provides refactoring with safety checks. It uses search-based impact analysis before making changes, performs batch edits, and verifies correctness.
 
 **Core capabilities:**
 - Safe rename operations with complete reference updates
@@ -15,7 +15,7 @@ description: Safe refactoring operations using LSP for precise symbol resolution
 - Move symbol across files with import fixups
 - Unused code cleanup based on zero-reference analysis
 
-**IMPORTANT:** This skill uses OpenCode's built-in LSP tools for precise refactoring. If LSP returns no results for the target language, fall back to Grep-based patterns.
+**IMPORTANT:** OpenCode CLI does not provide built-in LSP tools by default. Use search-based workflows unless you have LSP servers configured.
 
 ## Skill Family
 
@@ -48,20 +48,20 @@ Use `Skill(foundry:foundry-refactor)` for:
 
 ```
 - **Entry** → Select type: Rename, Extract, Move, Cleanup → Validate target
-  - [LSP available?] → `documentSymbol` → `goToDefinition`
-  - [else] → Grep fallback
-  - Impact analysis → `findReferences` → Assess risk: refs <10, <50, 50-100, >100 → (GATE: approve scope)
+  - [Optional LSP?] → `documentSymbol` → `goToDefinition`
+  - [else] → Grep-based discovery
+  - Impact analysis → Grep/rg reference scan → Assess risk: refs <10, <50, 50-100, >100 → (GATE: approve scope)
   - Execute → Operation path: rename, extract, move, cleanup
-  - Verify → Structural LSP → References LSP → Tests via foundry-test
+  - Verify → Structural checks → Reference checks → Tests via foundry-test
   - Document
     - [spec task?] → Journal entry
     - [else] → skip
   - **Exit**: Done
 ```
 
-## LSP Tools
+## Optional LSP Tools
 
-This skill uses OpenCode's built-in LSP tools directly:
+If you have LSP servers configured in OpenCode, you may use these tools to speed up structural checks. Otherwise, skip this section.
 
 | Tool | Purpose |
 |------|---------|
@@ -88,7 +88,7 @@ Gather information about what to refactor:
    - Refactoring type (rename, extract, move, cleanup)
    - New name or destination (if applicable)
 
-2. **Validate target exists with LSP:**
+2. **Validate target exists (optional LSP):**
    ```
    definition = goToDefinition(file="src/module.py", symbol="OldClassName", line=10)
 
@@ -98,7 +98,7 @@ Gather information about what to refactor:
        Ask user to verify symbol name and location
    ```
 
-3. **Fallback if LSP unavailable:**
+3. **Fallback when LSP unavailable:**
    ```
    Use Grep to verify symbol exists:
    Grep(pattern="class OldClassName", path="src/")
@@ -132,13 +132,13 @@ Execute the appropriate operation based on refactoring type:
 
 After any refactoring:
 
-1. **Structural verification (LSP):**
+1. **Structural verification (optional LSP):**
    ```
    documentSymbol(file="src/module.py")
    # Verify expected structure preserved
    ```
 
-2. **Reference verification (LSP):**
+2. **Reference verification (optional LSP):**
    ```
    findReferences(file="src/module.py", symbol="NewName")
    # Verify all references resolve
@@ -163,9 +163,9 @@ For significant refactors, add journal entry:
 foundry-mcp_journal action="add" spec_id="{spec-id}" title="Refactoring: OldClassName -> NewClassName" content="Renamed class for clarity. 47 references updated across 12 files. No functional changes." entry_type="decision"
 ```
 
-## LSP Availability Check
+## LSP Availability Check (Optional)
 
-Before using LSP-enhanced workflow, verify by calling `documentSymbol` on the target file. If it returns successfully, use LSP workflow. Otherwise, fall back to Grep-based workflow.
+Only run this check if LSP servers are configured. Otherwise, skip and use Grep-based workflow.
 
 > See [references/lsp-check.md](./references/lsp-check.md) for fallback triggers and verification procedure.
 
@@ -210,5 +210,5 @@ Skill(foundry:foundry-refactor) "Complete task-2-3: Rename UserDTO to UserRespon
 For comprehensive documentation including:
 - Impact analysis → `references/impact-analysis.md`
 - Refactoring operations → `references/operations.md`
-- LSP availability check → `references/lsp-check.md`
+- Optional LSP availability check → `references/lsp-check.md`
 - Troubleshooting → `references/troubleshooting.md`
