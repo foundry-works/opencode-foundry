@@ -1,21 +1,6 @@
 # Impact Analysis
 
-> Note: OpenCode CLI does not provide built-in LSP tools by default. Use LSP guidance only if you have LSP servers configured.
-
 **NEVER refactor without understanding impact first.**
-
-## LSP-Enhanced Impact Analysis (Optional)
-
-```
-# Get all references to the symbol
-references = findReferences(file="src/module.py", symbol="OldClassName", line=10, character=6)
-
-# Analyze results:
-- Total reference count
-- Unique files affected
-- Reference types (import, call, type annotation, assignment)
-- Test files vs production files
-```
 
 ## Impact Report Format
 
@@ -45,14 +30,13 @@ Present to user before proceeding:
 Proceed? [Execute] [Dry Run] [Cancel]
 ```
 
-## Fallback Impact Analysis
+## Impact Analysis Method
 
-If LSP unavailable:
+Use Grep/rg to find references:
 
 ```
-Use Grep to find references:
-Grep(pattern="OldClassName", path="src/", output_mode="content")
+rg -n "OldClassName" src/
+```
 
 WARNING: Grep-based analysis may include false positives (comments, strings).
 Review each match before proceeding.
-```

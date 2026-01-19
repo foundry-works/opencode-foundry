@@ -1,9 +1,7 @@
 # Best Practices
 
 ## DO
-- If LSP servers are configured, run a structural pre-check before expensive AI review
-- Use `documentSymbol` to verify expected classes/functions exist
-- Use `findReferences` and `incomingCalls` to assess deviation impact
+- Use MCP output to assess deviation impact
 - Validate that spec_id and task_id/phase_id are provided
 - Present findings clearly with categorized deviations
 - Highlight recommendations for remediation
@@ -12,7 +10,6 @@
 - Surface the saved JSON report path so the caller can inspect the full consensus artifacts
 
 ## DON'T
-- Skip LSP steps when no LSP servers are configured
 - Attempt to manually implement review logic (the MCP tool handles it)
 - Read spec files directly with Read/Python/jq/Bash (the MCP tool loads them)
 - Use grep/sed/awk to parse JSON—the MCP responses are already structured

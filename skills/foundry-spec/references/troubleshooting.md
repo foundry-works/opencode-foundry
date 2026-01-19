@@ -1,7 +1,5 @@
 # Troubleshooting
 
-> Note: OpenCode CLI does not provide built-in LSP tools by default. Use LSP guidance only if you have LSP servers configured.
-
 Common issues and their resolutions.
 
 ## Validation Errors
@@ -53,14 +51,6 @@ Common issues and their resolutions.
 1. Plan file exists in `specs/.plans/`
 2. Markdown is well-formed
 3. Required sections present (Objective, Phases)
-
-## LSP Not Available (Optional)
-
-**Symptoms:** LSP tools return errors
-
-**Fallbacks:**
-1. Use Explore agent with specific search terms
-2. Use Grep for symbol search: `Grep pattern="class AuthService"`
 
 ## Phase-Add-Bulk Errors
 
@@ -138,13 +128,7 @@ foundry-mcp_authoring action="phase-add-bulk" spec_id="{spec-id}" phase='{"title
 ## Analysis Commands
 
 ```bash
-# LSP tools (optional)
-documentSymbol(file="src/auth/service.py")
-findReferences(file="src/auth/service.py", symbol="AuthService", line=15, character=6)
-goToDefinition(file="src/api/routes.py", symbol="authenticate", line=42, character=10)
-incomingCalls(file="src/auth/service.py", symbol="authenticate", line=42, character=10)
-
-# Fallback: Grep
+# Grep
 Grep pattern="class ClassName" type="py"
 Grep pattern="def functionName" type="py"
 ```

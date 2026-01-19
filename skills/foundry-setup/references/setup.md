@@ -635,7 +635,7 @@ Use marker comments for idempotent updates:
 | Verify implementation | `foundry-review` skill |
 | Run tests and debug | `foundry-test` skill |
 | Create PR with spec context | `foundry-pr` skill |
-| Safe refactoring (optional LSP) | `foundry-refactor` skill |
+| Safe refactoring | `foundry-refactor` skill |
 
 ### Key Rules
 
@@ -656,10 +656,6 @@ Use marker comments for idempotent updates:
 - Unresolved errors encountered
 - Required files or dependencies missing
 - Instead: keep `in_progress` and document blocker
-
-**Optional LSP pre-checks (if configured):**
-- Use LSP only when servers are configured
-- Otherwise rely on search/grep and MCP workflows
 
 **Research tool defaults - let config decide:**
 - Do NOT specify `timeout_per_provider` or `timeout_per_operation` - use `foundry-mcp.toml` defaults

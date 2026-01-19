@@ -15,7 +15,7 @@ description: Safe refactoring operations with explicit impact analysis. Supports
 - Move symbol across files with import fixups
 - Unused code cleanup based on zero-reference analysis
 
-**IMPORTANT:** OpenCode CLI does not provide built-in LSP tools by default. Use search-based workflows unless you have LSP servers configured.
+**IMPORTANT:** Use search-based workflows (rg/Grep/Read).
 
 ## Skill Family
 
@@ -48,8 +48,7 @@ Use `Skill(foundry:foundry-refactor)` for:
 
 ```
 - **Entry** → Select type: Rename, Extract, Move, Cleanup → Validate target
-  - [Optional LSP?] → `documentSymbol` → `goToDefinition`
-  - [else] → Grep-based discovery
+  - Grep-based discovery
   - Impact analysis → Grep/rg reference scan → Assess risk: refs <10, <50, 50-100, >100 → (GATE: approve scope)
   - Execute → Operation path: rename, extract, move, cleanup
   - Verify → Structural checks → Reference checks → Tests via foundry-test
@@ -59,17 +58,7 @@ Use `Skill(foundry:foundry-refactor)` for:
   - **Exit**: Done
 ```
 
-## Optional LSP Tools
-
-If you have LSP servers configured in OpenCode, you may use these tools to speed up structural checks. Otherwise, skip this section.
-
-| Tool | Purpose |
-|------|---------|
-| `findReferences` | Find all usages of a symbol |
-| `goToDefinition` | Navigate to symbol definition |
-| `documentSymbol` | Get file structure/symbol outline |
-
-For spec integration, use foundry-mcp:
+## MCP Tools for Spec Integration
 
 | Router | Actions | Purpose |
 |--------|---------|---------|
@@ -88,27 +77,16 @@ Gather information about what to refactor:
    - Refactoring type (rename, extract, move, cleanup)
    - New name or destination (if applicable)
 
-2. **Validate target exists (optional LSP):**
+2. **Verify symbol exists:**
    ```
-   definition = goToDefinition(file="src/module.py", symbol="OldClassName", line=10)
-
-   if definition found:
-       Proceed to impact analysis
-   else:
-       Ask user to verify symbol name and location
-   ```
-
-3. **Fallback when LSP unavailable:**
-   ```
-   Use Grep to verify symbol exists:
-   Grep(pattern="class OldClassName", path="src/")
+   rg -n "class OldClassName" src/
    ```
 
 ### Step 2: Impact Analysis (REQUIRED)
 
 **NEVER refactor without understanding impact first.**
 
-1. Use `findReferences` to get all usages of the symbol
+1. Use `rg`/`Grep` to find all usages of the symbol
 2. Analyze: total count, unique files, reference types (import, call, annotation)
 3. Present impact report to user with risk assessment
 4. Get user approval before proceeding
@@ -132,18 +110,11 @@ Execute the appropriate operation based on refactoring type:
 
 After any refactoring:
 
-1. **Structural verification (optional LSP):**
-   ```
-   documentSymbol(file="src/module.py")
-   # Verify expected structure preserved
-   ```
-
-2. **Reference verification (optional LSP):**
-   ```
-   findReferences(file="src/module.py", symbol="NewName")
-   # Verify all references resolve
-   ```
-
+1. **Structural verification:**
+   - Ensure symbol definition updated correctly
+   - Ensure imports updated correctly
+2. **Reference verification:**
+   - Confirm old symbol name no longer appears (`rg -n "OldName"`)
 3. **Run affected tests:**
    ```
    Skill(foundry:foundry-test) "Run tests for affected files"
@@ -162,12 +133,6 @@ For significant refactors, add journal entry:
 ```bash
 foundry-mcp_journal action="add" spec_id="{spec-id}" title="Refactoring: OldClassName -> NewClassName" content="Renamed class for clarity. 47 references updated across 12 files. No functional changes." entry_type="decision"
 ```
-
-## LSP Availability Check (Optional)
-
-Only run this check if LSP servers are configured. Otherwise, skip and use Grep-based workflow.
-
-> See [references/lsp-check.md](./references/lsp-check.md) for fallback triggers and verification procedure.
 
 ## Size Guidelines
 
@@ -210,5 +175,4 @@ Skill(foundry:foundry-refactor) "Complete task-2-3: Rename UserDTO to UserRespon
 For comprehensive documentation including:
 - Impact analysis → `references/impact-analysis.md`
 - Refactoring operations → `references/operations.md`
-- Optional LSP availability check → `references/lsp-check.md`
 - Troubleshooting → `references/troubleshooting.md`
