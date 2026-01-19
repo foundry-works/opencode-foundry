@@ -53,7 +53,7 @@ OpenCode requires explicit permissions for plugin tools. This phase automaticall
 Execute the permission check script:
 
 ```bash
-bash -c 'cd "$0" && WORKSPACE_DIR="$1" ./scripts/setup-permissions --diff' "${CLAUDE_PLUGIN_ROOT}" "$PWD"
+WORKSPACE_DIR="$PWD" ./scripts/setup-permissions-opencode --diff
 ```
 
 Parse the JSON output to determine the permission status.
@@ -74,12 +74,9 @@ Continue to Phase 2.
 Explain:
 > "The `opencode.json` file doesn't exist in this project. This file controls which tools OpenCode can use without prompting.
 >
-> The plugin requires permissions for:
-> - All foundry-mcp MCP tools
-> - Git commands (status, diff, log, etc.)
-> - Test execution (pytest)
-> - AI provider CLIs (codex, claude, gemini, cursor-agent, opencode)
-> - Read/write access to specs/ directories"
+> The plugin requires:
+> - **Permissions** for foundry-mcp MCP tools, git commands, test execution, AI provider CLIs, and specs/ directories
+> - **Extended MCP timeout** (10 minutes) for long-running operations like AI reviews and deep research"
 
 Use `AskUserQuestion`:
 - Question: "Create `opencode.json` with plugin permissions?"
@@ -89,7 +86,7 @@ Use `AskUserQuestion`:
 
 **If "Yes":** Run the script with `--create`:
 ```bash
-bash -c 'cd "$0" && WORKSPACE_DIR="$1" ./scripts/setup-permissions --create' "${CLAUDE_PLUGIN_ROOT}" "$PWD"
+WORKSPACE_DIR="$PWD" ./scripts/setup-permissions-opencode --create
 ```
 
 Display: "Created `opencode.json` with plugin permissions."
@@ -152,10 +149,10 @@ Use `AskUserQuestion`:
 
 **If "Add all missing":** Run the script with `--apply`:
 ```bash
-bash -c 'cd "$0" && WORKSPACE_DIR="$1" ./scripts/setup-permissions --apply' "${CLAUDE_PLUGIN_ROOT}" "$PWD"
+WORKSPACE_DIR="$PWD" ./scripts/setup-permissions-opencode --apply
 ```
 
-Display: "Permissions updated! Added {X} allow permissions and {Y} deny rules."
+Display: "Permissions and experimental settings updated!"
 
 **If "Skip":** Warn that some features may require manual approval, then continue.
 
@@ -682,7 +679,7 @@ Use marker comments for idempotent updates:
 
 Summarize what was configured:
 - Pre-flight check results (what passed/failed)
-- Permissions status (created/updated/skipped)
+- Permissions and experimental settings status (created/updated/skipped)
 - Workspace setup (specs directory, foundry-mcp.toml)
 - Implement defaults (auto/delegate/parallel flags, or note if already configured)
 - AI providers configured (list providers added to consultation priority, or note if skipped)

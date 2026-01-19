@@ -1,0 +1,144 @@
+{
+  "spec_id": "hello-world-python-app-2026-01-19-001",
+  "title": "hello-world-python-app",
+  "generated": "2026-01-19T16:27:59.359232Z",
+  "last_updated": "2026-01-19T16:30:24.530442Z",
+  "metadata": {
+    "description": "Spec for a minimal hello-world Python script at repo root with deterministic output and POSIX executability.",
+    "mission": "Deliver a minimal Python hello-world script at the repo root with a standard entry point, POSIX executable support, and deterministic output.",
+    "objectives": "- Deliver a hello-world Python script with deterministic output.\n- Ensure POSIX direct execution support while keeping python3 as the portable path.\n- Document minimum Python version and platform support in spec metadata.",
+    "complexity": "low",
+    "estimated_hours": 0,
+    "assumptions": [
+      "Repository allows adding hello.py at the repo root.",
+      "POSIX execution (chmod +x, ./hello.py) is acceptable for local development; portable path remains python3 hello.py.",
+      "Minimum supported Python version is 3.8+.",
+      "Windows support is via python3 hello.py; direct execution (./hello.py) is POSIX-only.",
+      "Executable bit must be preserved in git (file mode 100755) for hello.py on POSIX systems.",
+      "No automated tests will be added; verification is manual."
+    ],
+    "owner": "OpenCode",
+    "category": "implementation",
+    "template": "empty"
+  },
+  "progress_percentage": 0,
+  "status": "pending",
+  "current_phase": null,
+  "hierarchy": {
+    "spec-root": {
+      "type": "spec",
+      "title": "hello-world-python-app",
+      "status": "pending",
+      "parent": null,
+      "children": [
+        "phase-1"
+      ],
+      "total_tasks": 3,
+      "completed_tasks": 0,
+      "metadata": {
+        "purpose": "",
+        "category": "implementation"
+      },
+      "dependencies": {
+        "blocks": [],
+        "blocked_by": [],
+        "depends": []
+      }
+    },
+    "phase-1": {
+      "type": "phase",
+      "title": "Implement hello script",
+      "status": "pending",
+      "parent": "spec-root",
+      "children": [
+        "task-1-1",
+        "task-1-2",
+        "verify-1-1"
+      ],
+      "total_tasks": 3,
+      "completed_tasks": 0,
+      "metadata": {
+        "purpose": "",
+        "description": "Create the hello.py entry point with standard Python structure and POSIX executable support."
+      },
+      "dependencies": {
+        "blocks": [],
+        "blocked_by": [],
+        "depends": []
+      }
+    },
+    "task-1-1": {
+      "type": "task",
+      "title": "Create hello.py entry point",
+      "status": "pending",
+      "parent": "phase-1",
+      "children": [],
+      "total_tasks": 1,
+      "completed_tasks": 0,
+      "metadata": {
+        "description": "Add hello.py at repo root with a module docstring, main() function, and __main__ guard that prints the required greeting to stdout.",
+        "file_path": "hello.py",
+        "acceptance_criteria": [
+          "hello.py exists at repo root",
+          "Module docstring is exactly \"Hello world sample.\"",
+          "main() prints exactly \"Hello, world!\" to stdout with a trailing newline",
+          "__main__ guard calls main()"
+        ],
+        "task_category": "implementation"
+      },
+      "dependencies": {
+        "blocks": [],
+        "blocked_by": [],
+        "depends": []
+      }
+    },
+    "task-1-2": {
+      "type": "task",
+      "title": "Add Python 3 shebang and executable bit",
+      "status": "pending",
+      "parent": "phase-1",
+      "children": [],
+      "total_tasks": 1,
+      "completed_tasks": 0,
+      "metadata": {
+        "description": "Add a Python 3 shebang line and mark the script executable on POSIX systems. Ensure the executable bit is preserved in git (mode 100755).",
+        "file_path": "hello.py",
+        "acceptance_criteria": [
+          "First line is #!/usr/bin/env python3",
+          "hello.py is marked executable on POSIX (chmod +x hello.py)",
+          "Git file mode for hello.py is 100755 on POSIX systems"
+        ],
+        "task_category": "implementation"
+      },
+      "dependencies": {
+        "blocks": [],
+        "blocked_by": [],
+        "depends": []
+      }
+    },
+    "verify-1-1": {
+      "type": "verify",
+      "title": "Verify hello script output",
+      "status": "pending",
+      "parent": "phase-1",
+      "children": [],
+      "total_tasks": 1,
+      "completed_tasks": 0,
+      "metadata": {
+        "description": "Run the script via python3 and, on POSIX, direct execution to confirm stdout and exit status.",
+        "verification_type": "manual",
+        "acceptance_criteria": [
+          "python3 hello.py exits 0 and prints exactly \"Hello, world!\" to stdout with a trailing newline",
+          "./hello.py exits 0 and prints exactly \"Hello, world!\" to stdout with a trailing newline on POSIX systems",
+          "Executable bit is preserved in git (mode 100755) on POSIX systems"
+        ]
+      },
+      "dependencies": {
+        "blocks": [],
+        "blocked_by": [],
+        "depends": []
+      }
+    }
+  },
+  "journal": []
+}

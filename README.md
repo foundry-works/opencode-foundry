@@ -17,8 +17,31 @@ Run this after any changes to `skills/`:
 
 ## MCP setup
 
-This repo expects a local MCP server named `foundry-mcp`. A default config is provided:
+This repo requires the [foundry-mcp](https://github.com/foundry-works/foundry-mcp) MCP server.
 
-- `opencode.json`
+### Prerequisites
 
-If needed, adjust the `command` in `opencode.json` to match your environment.
+- Python 3.10 or higher
+- [uv](https://docs.astral.sh/uv/) (recommended) or pip
+
+### Configuration
+
+A default OpenCode config is provided in `opencode.json`. To use it:
+
+1. Copy or merge `opencode.json` into your OpenCode configuration, or
+2. Add the following to your existing OpenCode config file:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "foundry-mcp": {
+      "type": "local",
+      "command": ["uvx", "foundry-mcp"],
+      "enabled": true
+    }
+  }
+}
+```
+
+See the [foundry-mcp documentation](https://github.com/foundry-works/foundry-mcp) for all available options.

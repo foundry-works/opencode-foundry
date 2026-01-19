@@ -1,0 +1,397 @@
+#!/usr/bin/env bash
+# setup-permissions-opencode - Manage OpenCode permissions for foundry plugin
+#
+# Usage: ./setup-permissions-opencode [--check | --diff | --apply | --create]
+#
+# Options:
+#   --check   Exit 0 if permissions complete, exit 1 if missing
+#   --diff    Output JSON diff of missing permissions (default)
+#   --apply   Merge missing permissions into user's config
+#   --create  Create new config with all permissions
+#
+# Environment:
+#   WORKSPACE_DIR  Target workspace directory (default: current dir)
+
+set -euo pipefail
+
+# Resolve script directory for permissions-opencode.json location
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PERMISSIONS_FILE="${SCRIPT_DIR}/permissions-opencode.json"
+
+# Target workspace
+WORKSPACE_DIR="${WORKSPACE_DIR:-.}"
+
+# OpenCode config locations (in order of preference)
+# 1. .opencode/opencode.jsonc (project-specific, can be gitignored)
+# 2. opencode.json (project root)
+OPENCODE_DIR="${WORKSPACE_DIR}/.opencode"
+OPENCODE_JSONC="${OPENCODE_DIR}/opencode.jsonc"
+OPENCODE_JSON="${WORKSPACE_DIR}/opencode.json"
+
+# Determine which config file to use (prefer opencode.json if it exists)
+if [ -f "$OPENCODE_JSON" ]; then
+    CONFIG_FILE="$OPENCODE_JSON"
+elif [ -f "$OPENCODE_JSONC" ]; then
+    CONFIG_FILE="$OPENCODE_JSONC"
+else
+    # Default to opencode.json for new configs (standard location)
+    CONFIG_FILE="$OPENCODE_JSON"
+fi
+
+# ============================================================================
+# JSON Helper Functions (Python-based for JSONC support)
+# ============================================================================
+
+strip_jsonc_comments() {
+    # Remove // and /* */ comments from JSONC
+    python3 -c "
+import re
+import sys
+
+content = sys.stdin.read()
+
+# Remove single-line comments (// ...)
+content = re.sub(r'//.*?$', '', content, flags=re.MULTILINE)
+
+# Remove multi-line comments (/* ... */)
+content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
+
+print(content)
+"
+}
+
+read_config() {
+    local file="$1"
+    if [ ! -f "$file" ]; then
+        echo "{}"
+        return
+    fi
+
+    # Handle JSONC (strip comments first)
+    if [[ "$file" == *.jsonc ]]; then
+        cat "$file" | strip_jsonc_comments
+    else
+        cat "$file"
+    fi
+}
+
+# ============================================================================
+# Permission Logic
+# ============================================================================
+
+get_required_permissions() {
+    # Extract the permission object from permissions-opencode.json
+    if [ ! -f "$PERMISSIONS_FILE" ]; then
+        echo "Error: permissions-opencode.json not found at $PERMISSIONS_FILE" >&2
+        exit 1
+    fi
+
+    python3 -c "
+import json
+
+with open('$PERMISSIONS_FILE', 'r') as f:
+    data = json.load(f)
+
+# Return the permission object
+print(json.dumps(data.get('permission', {})))
+"
+}
+
+get_required_experimental() {
+    # Extract the experimental object from permissions-opencode.json
+    if [ ! -f "$PERMISSIONS_FILE" ]; then
+        echo "{}"
+        return
+    fi
+
+    python3 -c "
+import json
+
+with open('$PERMISSIONS_FILE', 'r') as f:
+    data = json.load(f)
+
+# Return the experimental object (without comments)
+exp = data.get('experimental', {})
+clean = {k: v for k, v in exp.items() if not k.startswith('_')}
+print(json.dumps(clean))
+"
+}
+
+get_user_permissions() {
+    # Extract user's current permission settings
+    local config_json
+    config_json=$(read_config "$CONFIG_FILE")
+
+    python3 -c "
+import json
+
+try:
+    data = json.loads('''$config_json''')
+    print(json.dumps(data.get('permission', {})))
+except:
+    print('{}')
+"
+}
+
+get_user_experimental() {
+    # Extract user's current experimental settings
+    local config_json
+    config_json=$(read_config "$CONFIG_FILE")
+
+    python3 -c "
+import json
+
+try:
+    data = json.loads('''$config_json''')
+    print(json.dumps(data.get('experimental', {})))
+except:
+    print('{}')
+"
+}
+
+compute_diff() {
+    local required_perms user_perms required_exp user_exp
+    required_perms=$(get_required_permissions)
+    user_perms=$(get_user_permissions)
+    required_exp=$(get_required_experimental)
+    user_exp=$(get_user_experimental)
+
+    python3 -c "
+import json
+
+required = json.loads('''$required_perms''')
+user = json.loads('''$user_perms''')
+required_exp = json.loads('''$required_exp''')
+user_exp = json.loads('''$user_exp''')
+
+def remove_comments(obj):
+    '''Remove _comment keys from object.'''
+    if isinstance(obj, dict):
+        return {k: remove_comments(v) for k, v in obj.items() if not k.startswith('_')}
+    return obj
+
+def deep_diff(req, usr, path=''):
+    '''Find missing settings (in required but not in user).'''
+    missing = {}
+
+    for key, value in req.items():
+        # Skip comment keys
+        if key.startswith('_'):
+            continue
+
+        full_path = f'{path}.{key}' if path else key
+
+        if key not in usr:
+            # Entire key is missing (remove comments from value)
+            missing[key] = remove_comments(value) if isinstance(value, dict) else value
+        elif isinstance(value, dict) and isinstance(usr.get(key), dict):
+            # Recurse into nested objects
+            nested_missing = deep_diff(value, usr[key], full_path)
+            if nested_missing:
+                missing[key] = nested_missing
+        elif value != usr.get(key):
+            # Value differs
+            missing[key] = remove_comments(value) if isinstance(value, dict) else value
+
+    return missing
+
+missing_perms = deep_diff(required, user)
+missing_exp = deep_diff(required_exp, user_exp)
+
+# Determine status
+import os
+config_file = '$CONFIG_FILE'
+config_exists = os.path.exists(config_file) if config_file else False
+if not config_exists:
+    status = 'no_file'
+elif not missing_perms and not missing_exp:
+    status = 'complete'
+else:
+    status = 'missing'
+
+output = {
+    'status': status,
+    'file_path': '$CONFIG_FILE',
+    'missing_permissions': missing_perms,
+    'missing_experimental': missing_exp,
+    'current_permissions': user,
+    'current_experimental': user_exp,
+    'action_taken': 'none'
+}
+
+print(json.dumps(output, indent=2))
+"
+}
+
+create_config_file() {
+    # Create new config file with all required permissions and experimental settings
+    mkdir -p "$(dirname "$CONFIG_FILE")" 2>/dev/null || true
+
+    local required_perms required_exp
+    required_perms=$(get_required_permissions)
+    required_exp=$(get_required_experimental)
+
+    # Read existing config to preserve other settings (like mcp)
+    local existing_config
+    if [ -f "$OPENCODE_JSON" ]; then
+        existing_config=$(read_config "$OPENCODE_JSON")
+    else
+        existing_config="{}"
+    fi
+
+    python3 -c "
+import json
+
+required_perms = json.loads('''$required_perms''')
+required_exp = json.loads('''$required_exp''')
+existing = json.loads('''$existing_config''')
+
+# Remove _comment keys from required settings
+def remove_comments(obj):
+    if isinstance(obj, dict):
+        return {k: remove_comments(v) for k, v in obj.items() if not k.startswith('_')}
+    return obj
+
+clean_perms = remove_comments(required_perms)
+clean_exp = remove_comments(required_exp)
+
+# Merge: preserve existing settings, add permissions and experimental
+config = existing.copy()
+config['permission'] = clean_perms
+if clean_exp:
+    config['experimental'] = clean_exp
+
+# Ensure schema is set
+if '\$schema' not in config:
+    config['\$schema'] = 'https://opencode.ai/config.json'
+
+with open('$CONFIG_FILE', 'w') as f:
+    json.dump(config, f, indent=2)
+    f.write('\n')
+"
+
+    echo "created"
+}
+
+apply_permissions() {
+    # Merge missing permissions and experimental settings into existing config
+    if [ ! -f "$CONFIG_FILE" ]; then
+        create_config_file
+        return
+    fi
+
+    local required_perms required_exp user_config
+    required_perms=$(get_required_permissions)
+    required_exp=$(get_required_experimental)
+
+    # Read from the detected config file
+    user_config=$(read_config "$CONFIG_FILE")
+
+    python3 -c "
+import json
+
+required_perms = json.loads('''$required_perms''')
+required_exp = json.loads('''$required_exp''')
+config = json.loads('''$user_config''')
+
+def remove_comments(obj):
+    if isinstance(obj, dict):
+        return {k: remove_comments(v) for k, v in obj.items() if not k.startswith('_')}
+    return obj
+
+def deep_merge(base, overlay):
+    '''Merge overlay into base, preserving base values where not overridden.'''
+    result = base.copy()
+
+    for key, value in overlay.items():
+        if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            result[key] = deep_merge(result[key], value)
+        else:
+            result[key] = value
+
+    return result
+
+clean_perms = remove_comments(required_perms)
+clean_exp = remove_comments(required_exp)
+
+# Ensure permission object exists
+if 'permission' not in config:
+    config['permission'] = {}
+
+# Merge required permissions into existing
+config['permission'] = deep_merge(config['permission'], clean_perms)
+
+# Merge experimental settings
+if clean_exp:
+    if 'experimental' not in config:
+        config['experimental'] = {}
+    config['experimental'] = deep_merge(config['experimental'], clean_exp)
+
+# Ensure schema is set
+if '\$schema' not in config:
+    config['\$schema'] = 'https://opencode.ai/config.json'
+
+with open('$CONFIG_FILE', 'w') as f:
+    json.dump(config, f, indent=2)
+    f.write('\n')
+"
+
+    echo "merged"
+}
+
+# ============================================================================
+# Main
+# ============================================================================
+
+main() {
+    local mode="${1:---diff}"
+
+    case "$mode" in
+        --check)
+            local result
+            result=$(compute_diff)
+            local status
+            status=$(echo "$result" | python3 -c "import sys, json; print(json.load(sys.stdin)['status'])")
+            if [ "$status" = "complete" ]; then
+                exit 0
+            else
+                exit 1
+            fi
+            ;;
+        --diff)
+            compute_diff
+            ;;
+        --apply)
+            local action
+            action=$(apply_permissions)
+            # Re-run diff with action noted
+            local result
+            result=$(compute_diff)
+            echo "$result" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+data['action_taken'] = '$action'
+print(json.dumps(data, indent=2))
+"
+            ;;
+        --create)
+            mkdir -p "$OPENCODE_DIR"
+            local action
+            action=$(create_config_file)
+            local result
+            result=$(compute_diff)
+            echo "$result" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+data['action_taken'] = '$action'
+print(json.dumps(data, indent=2))
+"
+            ;;
+        *)
+            echo "Usage: $0 [--check | --diff | --apply | --create]" >&2
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

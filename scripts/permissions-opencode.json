@@ -1,24 +1,18 @@
 {
-  "$schema": "https://opencode.ai/config.json",
+  "description": "Required permissions for opencode-foundry plugin",
+  "version": "1.0.0",
   "experimental": {
+    "_comment": "Extended MCP timeout for long-running operations (10 minutes in ms)",
     "mcp_timeout": 600000
-  },
-  "mcp": {
-    "foundry-mcp": {
-      "type": "local",
-      "command": [
-        "uvx",
-        "foundry-mcp"
-      ],
-      "enabled": true
-    }
   },
   "permission": {
     "skill": {
+      "_comment": "All foundry plugin skills",
       "*": "allow"
     },
     "mcp__plugin_foundry_foundry-mcp__*": "allow",
     "bash": {
+      "_comment": "Git read operations, testing, and AI provider CLIs",
       "git status*": "allow",
       "git diff*": "allow",
       "git log*": "allow",
@@ -36,12 +30,14 @@
       "opencode*": "allow"
     },
     "edit": {
+      "_comment": "Edit access to spec directories",
       "**/specs/pending/**": "allow",
       "**/specs/active/**": "allow",
       "**/specs/completed/**": "allow",
       "**/specs/archived/**": "allow"
     },
     "read": {
+      "_comment": "Deny direct read of spec JSON files to force MCP usage",
       "**/specs/**/*.json": "deny",
       "*": "allow"
     }
