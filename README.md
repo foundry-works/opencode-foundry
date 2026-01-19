@@ -1,6 +1,27 @@
 # opencode-foundry
 
-OpenCode-native Foundry skills.
+[OpenCode CLI](https://opencode.ai) skills for opinionated spec-driven development using the [foundry-mcp](https://github.com/foundry-works/foundry-mcp).
+
+## Quick Install
+
+Install globally with a single command:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/foundry-works/opencode-foundry/main/install/install.sh | bash
+```
+
+This installs:
+- **9 Foundry skills** to `~/.config/opencode/skills/`
+- **MCP server config** merged into `~/.config/opencode/opencode.json`
+- **foundry-mcp** Python package (via uvx/pipx/pip)
+
+After installation, verify with:
+
+```bash
+opencode /foundry-setup
+```
+
+See [install/README.md](install/README.md) for options (`--dry-run`, `--uninstall`, etc.)
 
 ## Structure
 

@@ -1,3 +1,4 @@
 .opencode/
 !docs/examples/specs/
 !docs/examples/specs/**
+.claude/
