@@ -15,10 +15,11 @@ This installs:
 - **MCP server config** merged into `~/.config/opencode/opencode.json`
 - **foundry-mcp** Python package (via uvx/pipx/pip)
 
-After installation, verify with:
+After installation, start OpenCode and run the setup skill:
 
 ```bash
-opencode /foundry-setup
+opencode
+# Then type: /foundry-setup
 ```
 
 See [install/README.md](install/README.md) for options (`--dry-run`, `--uninstall`, etc.)
@@ -55,12 +56,49 @@ A default OpenCode config is provided in `opencode.json`. To use it:
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
+  "experimental": {
+    "mcp_timeout": 600000
+  },
   "mcp": {
     "foundry-mcp": {
       "type": "local",
       "command": ["uvx", "foundry-mcp"],
       "enabled": true
     }
+  },
+  "permission": {
+    "skill": {
+      "*": "allow"
+    },
+    "mcp__plugin_foundry_foundry-mcp__*": "allow",
+    "bash": {
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "git rev-parse*": "allow",
+      "git branch*": "allow",
+      "git show*": "allow",
+      "pytest*": "allow",
+      "python -m pytest*": "allow",
+      "foundry-mcp*": "allow",
+      "foundry-cli*": "allow",
+      "codex*": "allow",
+      "claude*": "allow",
+      "gemini*": "allow",
+      "cursor-agent*": "allow",
+      "opencode*": "allow"
+    },
+    "edit": {
+      "**/specs/pending/**": "allow",
+      "**/specs/active/**": "allow",
+      "**/specs/completed/**": "allow",
+      "**/specs/archived/**": "allow"
+    },
+    "read": {
+      "**/specs/**/*.json": "deny",
+      "*": "allow"
+    },
+    "lsp": "allow"
   }
 }
 ```

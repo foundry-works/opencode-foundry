@@ -106,7 +106,8 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 After installation, verify your setup:
 
 ```bash
-opencode /foundry-setup
+opencode
+# Then type: /foundry-setup
 ```
 
 This will check that all components are properly configured.

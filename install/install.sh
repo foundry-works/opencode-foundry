@@ -605,7 +605,7 @@ main() {
     # Success message
     echo -e "\n${GREEN}${BOLD}Installation complete!${NC}"
     echo ""
-    echo "Run 'opencode /foundry-setup' to verify your setup."
+    echo "Run 'opencode' then type '/foundry-setup' to verify your setup."
     echo ""
 }
 

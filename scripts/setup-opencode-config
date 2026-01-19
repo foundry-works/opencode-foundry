@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
-# setup-permissions-opencode - Manage OpenCode permissions for foundry plugin
+# setup-opencode-config - Manage OpenCode configuration for foundry plugin
 #
-# Usage: ./setup-permissions-opencode [--check | --diff | --apply | --create]
+# Usage: ./setup-opencode-config [--check | --diff | --apply | --create]
 #
 # Options:
-#   --check   Exit 0 if permissions complete, exit 1 if missing
-#   --diff    Output JSON diff of missing permissions (default)
-#   --apply   Merge missing permissions into user's config
-#   --create  Create new config with all permissions
+#   --check   Exit 0 if config complete, exit 1 if missing
+#   --diff    Output JSON diff of missing config (default)
+#   --apply   Merge missing config into user's opencode.json
+#   --create  Create new config with all settings
 #
 # Environment:
 #   WORKSPACE_DIR  Target workspace directory (default: current dir)
 
 set -euo pipefail
 
-# Resolve script directory for permissions-opencode.json location
+# Resolve script directory for opencode-config.json location
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PERMISSIONS_FILE="${SCRIPT_DIR}/permissions-opencode.json"
+CONFIG_TEMPLATE="${SCRIPT_DIR}/opencode-config.json"
 
 # Target workspace
 WORKSPACE_DIR="${WORKSPACE_DIR:-.}"
@@ -81,15 +81,15 @@ read_config() {
 
 get_required_permissions() {
     # Extract the permission object from permissions-opencode.json
-    if [ ! -f "$PERMISSIONS_FILE" ]; then
-        echo "Error: permissions-opencode.json not found at $PERMISSIONS_FILE" >&2
+    if [ ! -f "$CONFIG_TEMPLATE" ]; then
+        echo "Error: opencode-config.json not found at $CONFIG_TEMPLATE" >&2
         exit 1
     fi
 
     python3 -c "
 import json
 
-with open('$PERMISSIONS_FILE', 'r') as f:
+with open('$CONFIG_TEMPLATE', 'r') as f:
     data = json.load(f)
 
 # Return the permission object
@@ -99,7 +99,7 @@ print(json.dumps(data.get('permission', {})))
 
 get_required_experimental() {
     # Extract the experimental object from permissions-opencode.json
-    if [ ! -f "$PERMISSIONS_FILE" ]; then
+    if [ ! -f "$CONFIG_TEMPLATE" ]; then
         echo "{}"
         return
     fi
@@ -107,7 +107,7 @@ get_required_experimental() {
     python3 -c "
 import json
 
-with open('$PERMISSIONS_FILE', 'r') as f:
+with open('$CONFIG_TEMPLATE', 'r') as f:
     data = json.load(f)
 
 # Return the experimental object (without comments)

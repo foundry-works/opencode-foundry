@@ -39,4 +39,4 @@ fi
 echo "Skills synced successfully"
 echo ""
 echo "To apply OpenCode permissions, run:"
-echo "  ./scripts/setup-permissions-opencode --apply"
+echo "  ./scripts/setup-opencode-config --apply"

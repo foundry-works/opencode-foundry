@@ -53,7 +53,7 @@ OpenCode requires explicit permissions for plugin tools. This phase automaticall
 Execute the permission check script:
 
 ```bash
-WORKSPACE_DIR="$PWD" ./scripts/setup-permissions-opencode --diff
+WORKSPACE_DIR="$PWD" ./scripts/setup-opencode-config --diff
 ```
 
 Parse the JSON output to determine the permission status.
@@ -86,7 +86,7 @@ Use `AskUserQuestion`:
 
 **If "Yes":** Run the script with `--create`:
 ```bash
-WORKSPACE_DIR="$PWD" ./scripts/setup-permissions-opencode --create
+WORKSPACE_DIR="$PWD" ./scripts/setup-opencode-config --create
 ```
 
 Display: "Created `opencode.json` with plugin permissions."
@@ -149,7 +149,7 @@ Use `AskUserQuestion`:
 
 **If "Add all missing":** Run the script with `--apply`:
 ```bash
-WORKSPACE_DIR="$PWD" ./scripts/setup-permissions-opencode --apply
+WORKSPACE_DIR="$PWD" ./scripts/setup-opencode-config --apply
 ```
 
 Display: "Permissions and experimental settings updated!"
