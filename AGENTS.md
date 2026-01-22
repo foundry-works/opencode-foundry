@@ -175,13 +175,13 @@ foundry-mcp_research action="ideate" prompt="Generate ideas for..."
 ### /foundry-note
 ```bash
 # Capture an idea
-foundry-mcp_intake action="add" title="[Idea] description" priority="p2"
+foundry-mcp_authoring action="intake-add" title="[Idea] description" priority="p2"
 
 # List pending items
-foundry-mcp_intake action="list" limit=20
+foundry-mcp_authoring action="intake-list" limit=20
 
 # Dismiss resolved item
-foundry-mcp_intake action="dismiss" item_id="{item-id}" reason="Resolved"
+foundry-mcp_authoring action="intake-dismiss" item_id="{item-id}" reason="Resolved"
 ```
 
 ### /foundry-refactor

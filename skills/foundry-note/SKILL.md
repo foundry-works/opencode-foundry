@@ -31,21 +31,21 @@ During implementation, proactively add items using MCP directly - do NOT prompt 
 
 ```
 - **Entry** → [action?]
-  - [add] → Capture item → `intake action="add"` → Confirm → **Exit**
-  - [list] → `intake action="list"` → Display items → **Exit**
-  - [dismiss] → `intake action="dismiss"` → Confirm → **Exit**
+  - [add] → Capture item → `authoring action="intake-add"` → Confirm → **Exit**
+  - [list] → `authoring action="intake-list"` → Display items → **Exit**
+  - [dismiss] → `authoring action="intake-dismiss"` → Confirm → **Exit**
   - [promote] → Select item → Add to spec → Dismiss original → **Exit**
 ```
 
 ## MCP Tooling
 
-This skill uses the Foundry MCP server with router+action pattern: `foundry-mcp_intake`.
+This skill uses the Foundry MCP server with router+action pattern: `foundry-mcp_authoring`.
 
 | Action | Purpose | Key Parameters |
 |--------|---------|----------------|
-| `add` | Create intake item | `title` (required), `description`, `priority`, `tags`, `source` |
-| `list` | List pending items | `limit`, `cursor` (FIFO pagination) |
-| `dismiss` | Mark item dismissed | `item_id`, `reason` |
+| `intake-add` | Create intake item | `title` (required), `description`, `priority`, `tags`, `source` |
+| `intake-list` | List pending items | `limit`, `cursor` (FIFO pagination) |
+| `intake-dismiss` | Mark item dismissed | `item_id`, `reason` |
 
 ## Core Workflows
 
@@ -54,7 +54,7 @@ This skill uses the Foundry MCP server with router+action pattern: `foundry-mcp_
 Capture an idea, bug, or task for later:
 
 ```bash
-foundry-mcp_intake action="add" title="[Type] description" priority="p2"
+foundry-mcp_authoring action="intake-add" title="[Type] description" priority="p2"
 ```
 
 **Title prefixes:**
@@ -71,7 +71,7 @@ foundry-mcp_intake action="add" title="[Type] description" priority="p2"
 Review pending intake items:
 
 ```bash
-foundry-mcp_intake action="list" limit=20
+foundry-mcp_authoring action="intake-list" limit=20
 ```
 
 ### Dismiss Item
@@ -79,7 +79,7 @@ foundry-mcp_intake action="list" limit=20
 Mark an item as resolved or no longer relevant:
 
 ```bash
-foundry-mcp_intake action="dismiss" item_id="{item-id}" reason="Resolved in PR #123"
+foundry-mcp_authoring action="intake-dismiss" item_id="{item-id}" reason="Resolved in PR #123"
 ```
 
 ### Promote to Spec
@@ -91,7 +91,7 @@ Add intake item to an existing spec, then dismiss:
 foundry-mcp_authoring action="task-add" spec_id="{spec-id}" phase_id="{phase-id}" title="{intake-title}" description="{intake-description}"
 
 # Dismiss intake item
-foundry-mcp_intake action="dismiss" item_id="{item-id}" reason="Promoted to {spec-id}/{task-id}"
+foundry-mcp_authoring action="intake-dismiss" item_id="{item-id}" reason="Promoted to {spec-id}/{task-id}"
 ```
 
 ## Priority Levels

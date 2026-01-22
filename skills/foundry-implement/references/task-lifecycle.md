@@ -104,6 +104,8 @@ foundry-mcp_task action="update-status" spec_id={spec-id} task_id={task-id} stat
 
 ## Batch Task States
 
+> **Note:** For comprehensive batch operations documentation including parameters, return values, and advanced patterns, see [parallel-mode.md](parallel-mode.md).
+
 Parallel mode (`--parallel`) manages multiple tasks as a batch with coordinated lifecycle.
 
 ### Batch State Model
@@ -145,10 +147,10 @@ Response includes `eligible_tasks` (no conflicts) and `excluded_tasks` (conflict
 ```bash
 foundry-mcp_task action="start-batch" \
   spec_id={spec-id} \
-  batch_id={batch-id}
+  task_ids='["task-3-1", "task-3-2"]'
 ```
 
-This marks all batch tasks as `in_progress` atomically.
+This marks all batch tasks as `in_progress` atomically. Extract task IDs from the `prepare-batch` response.
 
 ### Completing a Batch
 
@@ -157,18 +159,17 @@ After subagents finish, report aggregated results:
 ```bash
 foundry-mcp_task action="complete-batch" \
   spec_id={spec-id} \
-  batch_id={batch-id} \
-  results='[
-    {"task_id": "task-3-1", "status": "completed", "note": "Implemented auth handler"},
-    {"task_id": "task-3-2", "status": "completed", "note": "Added validation utils"},
-    {"task_id": "task-3-3", "status": "failed", "error": "Import error in module X"}
+  completions='[
+    {"task_id": "task-3-1", "success": true, "completion_note": "Implemented auth handler"},
+    {"task_id": "task-3-2", "success": true, "completion_note": "Added validation utils"},
+    {"task_id": "task-3-3", "success": false, "completion_note": "Import error in module X"}
   ]'
 ```
 
 **What `complete-batch` does:**
-1. Updates each task's status based on results
+1. Updates each task's status based on `success` field (completed or failed)
 2. Creates journal entries for completed tasks
-3. Leaves failed tasks as `in_progress` for retry
+3. Failed tasks get `status: "failed"`, `retry_count` incremented
 4. Returns summary with success/failure counts
 5. Recalculates phase progress
 
@@ -179,7 +180,7 @@ When some tasks in a batch fail:
 | Outcome | Task Status | Next Steps |
 |---------|-------------|------------|
 | Completed | `completed` | Normal - journaled automatically |
-| Failed | `in_progress` | Retry in next batch or debug manually |
+| Failed | `failed` | Retry in next batch or debug manually |
 | Timed out | `in_progress` | Check subagent, retry or block |
 
 **Recovery options:**
@@ -210,17 +211,22 @@ When some tasks in a batch fail:
 If a batch is interrupted (crash, timeout, user abort):
 
 ```bash
+# Reset specific tasks
 foundry-mcp_task action="reset-batch" \
   spec_id={spec-id} \
-  batch_id={batch-id} \
-  reason="Session interrupted by user"
+  task_ids='["task-3-1", "task-3-2"]'
+
+# Auto-detect and reset stale tasks (>1 hour old)
+foundry-mcp_task action="reset-batch" \
+  spec_id={spec-id} \
+  threshold_hours=1.0
 ```
 
 **What `reset-batch` does:**
-1. Resets all batch tasks to `pending` status
+1. Resets specified tasks (or stale tasks) to `pending` status
 2. Clears partial progress (uncommitted changes may be lost)
-3. Returns batch to `idle` state
-4. Records reset in journal for audit trail
+3. If `task_ids` not provided, auto-detects tasks in_progress longer than `threshold_hours`
+4. Returns summary of reset tasks
 
 **When to use reset:**
 - Subagent crashed mid-execution
@@ -241,5 +247,5 @@ foundry-mcp_task action="reset-batch" \
 | Complete | `task action="complete"` | `task action="complete-batch"` |
 | Progress | Immediate update | Aggregated at batch end |
 | Failure | Block or retry | Isolated per task |
-| Journal | Per-task automatic | Per-task in results array |
+| Journal | Per-task automatic | Per-task in completions array |
 | Reset | N/A (use block) | `task action="reset-batch"` |

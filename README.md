@@ -62,7 +62,7 @@ A default OpenCode config is provided in `opencode.json`. To use it:
   "mcp": {
     "foundry-mcp": {
       "type": "local",
-      "command": ["uvx", "foundry-mcp"],
+      "command": ["python", "-m", "foundry-mcp"],
       "enabled": true
     }
   },
