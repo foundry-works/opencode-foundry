@@ -27,6 +27,24 @@ description: AI-powered research skill with five workflows - chat (single-model 
 
 **CRITICAL for `deep` workflow:** Read [references/deep-research-workflow.md](./references/deep-research-workflow.md) before execution. Contains required polling strategy and MCP parameters.
 
+### Deep Research Polling Protocol (MANDATORY)
+
+**BEFORE EVERY status check, you MUST:**
+1. Generate user-facing text about current progress
+2. Do NOT call deep-research-status immediately after another MCP tool
+3. Track your check count (max 5)
+
+| Check # | What to Say |
+|---------|-------------|
+| 1 | "Research underway. Currently in {phase} phase..." |
+| 2-3 | "Progress: {queries_completed}/{total} queries done..." |
+| 4 | "Still working ({elapsed} minutes)..." |
+| 5 | Stop polling, use AskUserQuestion with options |
+
+**Stall Detection**: Only after `elapsed_ms > 300000` AND no progress change.
+
+**NO INDEPENDENT RESEARCH**: While deep research is running, do NOT use WebSearch, WebFetch, or other research tools. The deep research workflow handles all web gathering - doing your own searches is redundant and wastes resources.
+
 ## MCP Tooling
 
 | Router | Actions |

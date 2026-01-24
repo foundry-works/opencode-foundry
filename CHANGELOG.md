@@ -7,12 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-01-24
+
 ### Changed
 - Intake actions migrated to authoring router: `intake action="add"` → `authoring action="intake-add"`, etc.
 - MCP command changed from `uvx foundry-mcp` to `python -m foundry-mcp` in documentation
 - Batch task API parameters: `batch_id` → `task_ids`, `results` → `completions`
 
 ### Added
+- Deep research polling protocol with mandatory status check guidelines
+- Anti-pattern examples for deep research workflow (rapid polling, independent research)
 - Spec lifecycle documentation: "Completed vs Archived" guidance section
 - Batch reset now supports auto-detection of stale tasks with `threshold_hours`
 
@@ -48,7 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - foundry-mcp.toml workspace configuration
 - Skill synchronization via `sync-skills.sh`
 
-[Unreleased]: https://github.com/tyler-burleigh/opencode-foundry/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/tyler-burleigh/opencode-foundry/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/tyler-burleigh/opencode-foundry/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/tyler-burleigh/opencode-foundry/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/tyler-burleigh/opencode-foundry/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/tyler-burleigh/opencode-foundry/releases/tag/v0.1.0

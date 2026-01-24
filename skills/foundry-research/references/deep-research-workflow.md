@@ -172,6 +172,38 @@ When stall detected (>5 min with no progress), use AskUserQuestion:
 - "Cancel and try different query"
 ```
 
+### Anti-Patterns (DO NOT DO THIS)
+
+**BAD - Rapid polling:**
+```
+[start deep-research]
+[deep-research-status]  <-- VIOLATION: no user text
+[deep-research-status]  <-- VIOLATION: consecutive calls
+```
+
+**GOOD - Paced polling:**
+```
+[start deep-research]
+"Research started, typically takes 3-5 minutes..."
+[deep-research-status]
+"Progress: 3 of 5 sub-queries complete, 12 sources analyzed..."
+[deep-research-status]
+```
+
+**BAD - Independent research while waiting:**
+```
+[start deep-research]
+[WebSearch query="same topic"]  <-- VIOLATION: redundant research
+[WebFetch url="..."]            <-- VIOLATION: deep research handles this
+```
+
+**GOOD - Wait for deep research:**
+```
+[start deep-research]
+"Research started. The deep research workflow will gather and analyze sources..."
+[deep-research-status]
+```
+
 ## User Gates
 
 | Checkpoint | Prompt |
