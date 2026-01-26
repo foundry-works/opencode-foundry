@@ -31,7 +31,10 @@ High-level markdown plan created before JSON specification.
 **Tasks:**
 - {Task 1 description}
 - {Task 2 description}
-**Verification:** {How to verify phase completion}
+**Verification:**
+- Run tests: {test command or "N/A"}
+- Fidelity review: Compare implementation to spec (required)
+- Manual checks: {any manual verification steps}
 
 ### Phase 2: {Phase Name}
 **Goal:** {What this phase accomplishes}
@@ -39,7 +42,10 @@ High-level markdown plan created before JSON specification.
 **Tasks:**
 - {Task 1 description}
 - {Task 2 description}
-**Verification:** {How to verify phase completion}
+**Verification:**
+- Run tests: {test command or "N/A"}
+- Fidelity review: Compare implementation to spec (required)
+- Manual checks: {any manual verification steps}
 
 ## Risks
 | Risk | Likelihood | Impact | Mitigation |
@@ -86,7 +92,10 @@ After creation, read the template and fill in all placeholders with actual conte
 - Create JWT utility with RS256 signing
 - Implement auth middleware for protected routes
 - Add token refresh endpoint
-**Verification:** Unit tests pass, manual auth flow works
+**Verification:**
+- Run tests: `npm test -- --grep "auth"`
+- Fidelity review: Compare implementation to spec (required)
+- Manual checks: Auth flow works end-to-end
 ```
 
 **Bad:**

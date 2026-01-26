@@ -34,6 +34,8 @@ foundry-mcp_authoring action="phase-template" template_action="apply" template_n
 
 For maximum control over phase structure, use `phase-add-bulk` to create a phase with all its tasks in a single atomic operation. This macro accepts a nested payload with phase metadata and task definitions.
 
+**Important:** Every phase should include a fidelity review task as the final verification step. This ensures implementation matches the spec before proceeding to the next phase.
+
 ```bash
 foundry-mcp_authoring action="phase-add-bulk" spec_id="{spec-id}" phase='{"title": "Implementation", "description": "Core feature implementation", "estimated_hours": 8}' tasks='[{"type": "task", "title": "Implement core logic", "description": "Build the main functionality", "task_category": "implementation", "file_path": "src/core/logic.py", "estimated_hours": 4, "acceptance_criteria": ["Core logic returns expected outputs"]}, {"type": "task", "title": "Add error handling", "description": "Handle edge cases and errors", "task_category": "implementation", "file_path": "src/core/errors.py", "estimated_hours": 2, "acceptance_criteria": ["Errors are surfaced with actionable messages"]}, {"type": "verify", "title": "Run tests", "verification_type": "run-tests"}, {"type": "verify", "title": "Fidelity review", "verification_type": "fidelity"}]'
 ```

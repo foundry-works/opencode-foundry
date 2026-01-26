@@ -319,6 +319,8 @@ For `implementation` or `refactoring` tasks, set `metadata.file_path` to a **rea
 | `fidelity` | Compare implementation to spec |
 | `manual` | Manual testing checklist |
 
+> **Best Practice:** Every phase should end with a fidelity review task (`verification_type: "fidelity"`). This ensures implementation matches the spec before moving to the next phase. The `foundry-review` skill performs this comparison.
+
 ### Task Statuses
 
 | Status | Description |

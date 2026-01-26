@@ -78,6 +78,34 @@ Best practices for well-structured specs - every `type: "task"` should include:
 }
 ```
 
+## Phase Verification Pattern
+
+**Every phase should end with verification tasks.** The recommended pattern:
+
+1. **Run tests** (`verification_type: "run-tests"`) - Execute automated tests
+2. **Fidelity review** (`verification_type: "fidelity"`) - Compare implementation to spec
+
+```json
+{
+  "verify-1-1": {
+    "title": "Run Phase 1 tests",
+    "type": "verify",
+    "metadata": { "verification_type": "run-tests" }
+  },
+  "verify-1-2": {
+    "title": "Fidelity review: Phase 1",
+    "type": "verify",
+    "metadata": {
+      "verification_type": "fidelity",
+      "scope": "phase",
+      "target": "phase-1"
+    }
+  }
+}
+```
+
+> **Why fidelity review matters:** Without it, implementation can drift from the spec over time. Fidelity review catches missing requirements, incomplete acceptance criteria, and scope creep before they compound.
+
 ## Research Nodes
 
 Research nodes use AI-powered workflows for investigation, ideation, and consensus-building before or during implementation.
